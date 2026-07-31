@@ -4,6 +4,11 @@
 // the generator reads them straight out of node_modules — nothing is fetched,
 // and the licence (CC BY 4.0) permits redistributing the path data with
 // attribution, which the generated file carries.
+//
+// That is also why @fortawesome/fontawesome-free is a devDependency and not a
+// dependency: the 39MB package is only ever read here, at author time. The path
+// data it produces is inlined into src/lib/tool-icons.tsx and committed, so
+// nothing from the package reaches the browser or a production install.
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 

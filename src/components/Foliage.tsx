@@ -123,8 +123,13 @@ export function Palm(props: ShapeProps) {
  * Hero backdrop: canopy light from above, foliage crowding in from the edges.
  *
  * Everything is pinned to the container's corners rather than laid out in
- * flow, so it cannot push the headline or the search field around. The centre
- * is deliberately left empty — that is where the type sits.
+ * flow, so it cannot push the headline or the tool links around. The centre is
+ * deliberately left empty — that is where the type sits.
+ *
+ * The shapes are positioned past the section's edges on purpose, which is why
+ * the hero carries `overflow-hidden`. Anything placed inside that hero is
+ * therefore clipped to it and cannot use an absolutely-positioned overlay that
+ * needs to extend below the fold.
  */
 export function CanopyBackdrop({ className = "" }: { className?: string }) {
   return (

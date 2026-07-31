@@ -6,6 +6,7 @@ import ProgressBar from "@/components/ProgressBar";
 import ResultBanner from "@/components/ResultBanner";
 import ErrorMessage from "@/components/ErrorMessage";
 import { extractAudioFromVideo } from "@/lib/audio-extractor";
+import { isEngineLoaded } from "@/lib/ffmpeg";
 import { downloadBlob } from "@/lib/download";
 
 export default function VideoToMp3Tool() {
@@ -88,9 +89,11 @@ export default function VideoToMp3Tool() {
           {processing && <ProgressBar progress={progress} label={progressLabel} />}
           {error && <ErrorMessage>{error}</ErrorMessage>}
 
-          <p className="text-xs text-ink-muted">
-            First run downloads a ~32MB conversion engine. It&apos;s cached afterwards.
-          </p>
+          {!isEngineLoaded() && !processing && (
+            <p className="text-xs text-ink-muted">
+              The first run downloads a 32MB media engine. It happens once per visit.
+            </p>
+          )}
 
           <button
             onClick={handleExtract}

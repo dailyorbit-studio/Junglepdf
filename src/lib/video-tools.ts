@@ -10,11 +10,17 @@
  * multi-minute wait. The UI says so before you start rather than after.
  */
 
-import { runFFmpegJob, withFFmpeg, readOutput, fetchFile, type ProgressFn } from "./ffmpeg";
+import {
+  runFFmpegJob,
+  withFFmpeg,
+  readOutput,
+  fetchFile,
+  hasAudioStream,
+  type ProgressFn,
+} from "./ffmpeg";
 import { toTimestamp } from "./media-info";
 import { createZip, type ZipEntry } from "./zip";
 import { atempoChain } from "./audio-speed";
-import type { FFmpeg } from "@ffmpeg/ffmpeg";
 
 function sourceExtension(file: File): string {
   return file.name.match(/\.([^.]+)$/)?.[1]?.toLowerCase() ?? "mp4";
@@ -387,7 +393,7 @@ export async function changeVideoSpeed(
 
     await ffmpeg.writeFile(inputName, await fetchFile(file));
 
-    const hasAudio = await probeHasAudio(ffmpeg, inputName);
+    const hasAudio = await hasAudioStream(ffmpeg, inputName);
 
     onProgress?.(`Retiming to ${speed}×…`, 30);
 
@@ -508,7 +514,7 @@ export async function mergeVideos(
 
       await ffmpeg.writeFile(inputName, await fetchFile(file));
 
-      const hasAudio = await probeHasAudio(ffmpeg, inputName);
+      const hasAudio = await hasAudioStream(ffmpeg, inputName);
       if (!hasAudio) paddedSilence = true;
 
       // Letterbox rather than stretch — a portrait phone clip next to a
@@ -683,36 +689,6 @@ export async function extractFrames(
 }
 
 /* ─── Shared ───────────────────────────────────────────────────────────── */
-
-/**
- * Does this file carry an audio stream?
- *
- * Asked by merge and speed, both of which build a filter graph that references
- * `[0:a]` and would fail outright on a silent clip. There is no ffprobe in
- * this build, but running FFmpeg with no output makes it dump the stream table
- * to the log on its way to exiting non-zero, which is enough to read.
- */
-async function probeHasAudio(ffmpeg: FFmpeg, name: string): Promise<boolean> {
-  let found = false;
-
-  const onLog = ({ message }: { message: string }) => {
-    if (/Stream #\d+:\d+.*: Audio:/.test(message)) found = true;
-  };
-
-  ffmpeg.on("log", onLog);
-  try {
-    // Exits non-zero ("At least one output file must be specified") after
-    // printing the stream table. That is the intended path, not a failure.
-    await ffmpeg.exec(["-i", name]);
-  } catch {
-    // Some builds reject rather than returning a code. Either way the log
-    // handler has already seen whatever streams were printed.
-  } finally {
-    ffmpeg.off("log", onLog);
-  }
-
-  return found;
-}
 
 /** Rough GIF size estimate, for warning before a 60MB surprise. */
 export function estimateGifBytes(

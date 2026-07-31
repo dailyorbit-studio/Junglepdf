@@ -76,6 +76,39 @@ export async function getFFmpeg(onProgress?: ProgressFn): Promise<FFmpeg> {
   }
 }
 
+/**
+ * Turn the tail of FFmpeg's log into something a person can act on.
+ *
+ * FFmpeg reports failures on stderr and then exits non-zero; the exit code
+ * alone says nothing. Without this, every tool could only guess at the cause,
+ * so a file with no audio track and a genuinely corrupt one produced the same
+ * "it may be corrupted, or…" sentence and left the user with nothing to do.
+ *
+ * Only the lines that actually diagnose something are kept — the banner, the
+ * build flags and the stream table are noise in an error message.
+ */
+function diagnose(log: string[]): string | null {
+  const meaningful = log
+    .map((line) => line.trim())
+    .filter(
+      (line) =>
+        line.length > 0 &&
+        !/^(ffmpeg version|built with|configuration:|lib[a-z]+\s+\d)/i.test(line) &&
+        !/^(Input|Output) #\d/.test(line) &&
+        !/^\s*(Stream|Metadata|Duration|encoder|handler_name|major_brand|minor_version|compatible_brands)/i.test(
+          line
+        )
+    );
+
+  const last = meaningful[meaningful.length - 1];
+  if (!last) return null;
+
+  // FFmpeg prefixes fatal errors with the offending file or muxer, e.g.
+  // "output.mp3: Invalid argument". Keep the whole line — the prefix is the
+  // useful half.
+  return last.length > 200 ? `${last.slice(0, 200)}…` : last;
+}
+
 export interface FFmpegJob {
   file: File;
   /** Name the file gets in the virtual FS. The extension matters — FFmpeg
@@ -115,20 +148,75 @@ export async function runFFmpegJob(
   };
   ffmpeg.on("progress", handleProgress);
 
+  // Kept in a ring so a long encode's log cannot grow without bound; only the
+  // tail matters, because that is where FFmpeg prints why it gave up.
+  const log: string[] = [];
+  const handleLog = ({ message }: { message: string }) => {
+    log.push(message);
+    if (log.length > 60) log.shift();
+  };
+  ffmpeg.on("log", handleLog);
+
   try {
     await ffmpeg.writeFile(job.inputName, await fetchFile(job.file));
 
     onProgress?.(job.label, from);
 
-    const exitCode = await ffmpeg.exec(["-i", job.inputName, ...job.args, job.outputName]);
-    if (exitCode !== 0) throw new Error(job.failureMessage);
+    // -y matters even on a fresh virtual FS: a run that died between exec and
+    // cleanup leaves the output behind, and the next attempt in the same tab
+    // would sit forever on an overwrite prompt that has no stdin to answer it.
+    const exitCode = await ffmpeg.exec([
+      "-i", job.inputName,
+      ...job.args,
+      "-y", job.outputName,
+    ]);
+
+    if (exitCode !== 0) {
+      const reason = diagnose(log);
+      throw new Error(reason ? `${job.failureMessage} (FFmpeg said: ${reason})` : job.failureMessage);
+    }
 
     return await readOutput(ffmpeg, job.outputName, job.outputMime, job.failureMessage);
   } finally {
     ffmpeg.off("progress", handleProgress);
+    ffmpeg.off("log", handleLog);
     await ffmpeg.deleteFile(job.inputName).catch(() => {});
     await ffmpeg.deleteFile(job.outputName).catch(() => {});
   }
+}
+
+/**
+ * Does this file carry an audio stream?
+ *
+ * There is no ffprobe in this build, but running FFmpeg with an input and no
+ * output makes it print the stream table on its way to exiting non-zero, which
+ * is enough to read.
+ *
+ * Asked by Video to MP3 before it encodes anything, and by the merge and speed
+ * tools, which build a filter graph referencing `[0:a]` that would fail outright
+ * on a silent clip. It lives here rather than in video-tools because the audio
+ * side needs it too, and a second copy would be a second thing to fix.
+ */
+export async function hasAudioStream(ffmpeg: FFmpeg, name: string): Promise<boolean> {
+  let found = false;
+
+  const onLog = ({ message }: { message: string }) => {
+    if (/Stream #\d+:\d+.*: Audio:/.test(message)) found = true;
+  };
+
+  ffmpeg.on("log", onLog);
+  try {
+    // Exits non-zero ("At least one output file must be specified") after
+    // printing the stream table. That is the intended path, not a failure.
+    await ffmpeg.exec(["-i", name]);
+  } catch {
+    // Some builds reject rather than returning a code. Either way the log
+    // handler has already seen whatever streams were printed.
+  } finally {
+    ffmpeg.off("log", onLog);
+  }
+
+  return found;
 }
 
 /**
