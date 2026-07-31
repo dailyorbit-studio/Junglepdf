@@ -109,6 +109,33 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         keywords: ["backwards", "backmask", "flip", "reversed"],
         isNew: true,
       },
+      {
+        name: "Silence Remover",
+        slug: "silence-remover",
+        description: "Cut silent gaps out of a recording, or just trim the dead air at each end.",
+        summary:
+          "FFmpeg's silenceremove with a threshold and minimum duration you set, so room tone survives and pauses go.",
+        keywords: ["remove silence", "trim silence", "dead air", "podcast", "cut gaps", "auto trim"],
+        isNew: true,
+      },
+      {
+        name: "Normalize Audio",
+        slug: "normalize",
+        description: "Even out loudness to a streaming, broadcast or peak target.",
+        summary:
+          "loudnorm to -14, -23 or -9 LUFS, or a straight peak normalise that leaves the dynamics alone.",
+        keywords: ["loudness", "lufs", "volume match", "too quiet", "even out", "ebu r128"],
+        isNew: true,
+      },
+      {
+        name: "Pitch Shifter",
+        slug: "pitch",
+        description: "Move audio up or down by semitones without changing how long it is.",
+        summary:
+          "Resamples to shift pitch, then corrects the tempo back with atempo so the length is unchanged.",
+        keywords: ["change pitch", "transpose", "semitone", "key change", "higher", "lower", "chipmunk"],
+        isNew: true,
+      },
     ],
   },
   {
@@ -174,7 +201,18 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         description: "Pick colors from any image and pull out its dominant palette.",
         summary:
           "Click for an exact pixel value, or extract the top colors as HEX, RGB, and HSL.",
-        keywords: ["eyedropper", "hex", "rgb", "hsl", "palette", "dominant color", "swatch"],
+        keywords: [
+          "eyedropper",
+          "hex",
+          "rgb",
+          "hsl",
+          "palette",
+          "dominant color",
+          "swatch",
+          "color palette generator",
+          "extract colors from image",
+          "image color extractor",
+        ],
       },
       {
         name: "Watermark Image",
@@ -201,6 +239,42 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         summary:
           "Uses the canvas filter pipeline, so what you see in the preview is exactly what gets exported.",
         keywords: ["brightness", "contrast", "saturation", "grayscale", "sepia", "blur", "edit"],
+        isNew: true,
+      },
+      {
+        name: "Image Collage",
+        slug: "collage",
+        description: "Combine several images into one — side by side, stacked, or in a grid.",
+        summary:
+          "Lays images out on a canvas with a gap and background you choose, centring each in its cell.",
+        keywords: ["combine images", "merge images", "photo grid", "side by side", "join pictures"],
+        isNew: true,
+      },
+      {
+        name: "Split Image",
+        slug: "split",
+        description: "Cut one image into a grid of tiles and download them as a ZIP.",
+        summary:
+          "Slices into any number of rows and columns, numbered so they sort correctly, bundled into one archive.",
+        keywords: ["image splitter", "cut image", "tiles", "instagram grid", "slice", "chop"],
+        isNew: true,
+      },
+      {
+        name: "Circle Crop",
+        slug: "circle-crop",
+        description: "Crop a photo to a circle for an avatar or profile picture, with an optional ring.",
+        summary:
+          "Masks the centre square to a circle on a transparent PNG, or on a colour for JPEG output.",
+        keywords: ["round crop", "avatar", "profile picture", "round image", "circular", "dp"],
+        isNew: true,
+      },
+      {
+        name: "PNG to ICO",
+        slug: "png-to-ico",
+        description: "Turn a PNG or JPEG into a real multi-size .ico favicon file.",
+        summary:
+          "Renders the image at each size you pick and packs them into one ICO container, PNG-compressed.",
+        keywords: ["ico converter", "favicon ico", "icon file", "windows icon", "png to icon"],
         isNew: true,
       },
     ],
@@ -491,6 +565,105 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         keywords: ["extract text", "copy text", "txt", "markdown", "plain text", "transcript"],
         isNew: true,
       },
+      {
+        name: "PDF to JPG",
+        slug: "pdf-to-jpg",
+        description: "Turn every page of a PDF into a JPG image at the resolution you choose.",
+        summary:
+          "Renders each page with pdf.js and encodes it as JPEG, bundled into a ZIP when there is more than one.",
+        keywords: ["pdf to jpeg", "pdf to image", "convert pdf to jpg", "pdf pages to pictures", "extract"],
+        isNew: true,
+      },
+      {
+        name: "PDF to PNG",
+        slug: "pdf-to-png",
+        description: "Render PDF pages to lossless PNG images with a transparent or white background.",
+        summary:
+          "Same renderer as PDF to JPG, encoding to PNG instead — sharper on text and diagrams, larger files.",
+        keywords: ["pdf to png", "pdf to image", "lossless", "transparent", "convert pdf pages"],
+        isNew: true,
+      },
+      {
+        name: "PDF to CSV",
+        slug: "pdf-to-csv",
+        description: "Pull tables out of a PDF into a CSV you can open anywhere.",
+        summary:
+          "Reconstructs columns from the text layer's coordinates and writes UTF-8 CSV with a BOM so Excel reads it correctly.",
+        keywords: ["extract table", "pdf table to csv", "convert pdf to csv", "spreadsheet", "data"],
+        isNew: true,
+      },
+      {
+        name: "CSV to PDF",
+        slug: "csv-to-pdf",
+        description: "Turn a CSV or TSV into a properly laid out PDF table.",
+        summary:
+          "Parses RFC 4180 CSV, detects the delimiter, and renders a real table with a repeating header row.",
+        keywords: ["csv to pdf", "table to pdf", "spreadsheet to pdf", "tsv", "print csv"],
+        isNew: true,
+      },
+      {
+        name: "CSV to Excel",
+        slug: "csv-to-excel",
+        description: "Wrap a CSV in a real .xlsx without Excel mangling your data on import.",
+        summary:
+          "Writes every cell as text, so leading zeros survive and nothing gets guessed into a date.",
+        keywords: ["csv to xlsx", "csv to excel", "convert csv", "leading zeros", "spreadsheet"],
+        isNew: true,
+      },
+      {
+        name: "Markdown to PDF",
+        slug: "markdown-to-pdf",
+        description: "Convert a Markdown file into a formatted PDF with headings, lists, tables and code.",
+        summary:
+          "Parses Markdown into the same layout engine the Word and HTML converters use, so the styling matches.",
+        keywords: ["md to pdf", "markdown", "readme to pdf", "convert md", "documentation"],
+        isNew: true,
+      },
+      {
+        name: "PDF Metadata",
+        slug: "pdf-metadata",
+        description: "See and edit a PDF's title, author and other properties — or strip them entirely.",
+        summary:
+          "Reads the document information dictionary, lets you rewrite every field, and clears all of them in one click.",
+        keywords: ["remove pdf metadata", "edit properties", "author", "title", "anonymize", "strip data"],
+        isNew: true,
+      },
+      {
+        name: "Reverse PDF",
+        slug: "reverse-pdf",
+        description: "Flip a PDF's page order so the last page comes first.",
+        summary:
+          "Copies pages into a fresh document in reverse, which also drops any orphaned objects the original held.",
+        keywords: ["reverse pages", "flip order", "backwards", "reorder", "last page first"],
+        isNew: true,
+      },
+      {
+        name: "Multiple Pages per Sheet",
+        slug: "n-up-pdf",
+        description: "Put 2, 4, 6 or 9 PDF pages on each sheet to save paper when printing.",
+        summary:
+          "Embeds pages as scalable XObjects, so text stays selectable and images keep their resolution.",
+        keywords: ["n-up", "2 pages per sheet", "4 up", "booklet", "save paper", "handout", "print"],
+        isNew: true,
+      },
+      {
+        name: "Resize PDF Pages",
+        slug: "resize-pdf",
+        description: "Change a PDF's page size — A4, Letter, Legal, A3 or A5 — without distorting it.",
+        summary:
+          "Scales each page to fit the new size and centres it, keeping the original proportions.",
+        keywords: ["a4 to letter", "change page size", "scale pdf", "letter to a4", "paper size"],
+        isNew: true,
+      },
+      {
+        name: "Unzip Files",
+        slug: "unzip",
+        description: "Open a ZIP archive, see what is inside, and pull out one file or all of them.",
+        summary:
+          "Lists the contents first, so a large archive can be browsed without unpacking all of it into memory.",
+        keywords: ["extract zip", "open zip", "unarchive", "decompress", "zip extractor", "winzip"],
+        isNew: true,
+      },
     ],
   },
   {
@@ -567,6 +740,33 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
         summary:
           "Pulls PNG or JPG stills at the interval you pick and bundles them into a ZIP.",
         keywords: ["screenshot", "stills", "thumbnail", "frame grab", "video to images"],
+        isNew: true,
+      },
+      {
+        name: "Crop Video",
+        slug: "crop",
+        description: "Cut a rectangle out of the frame — remove black bars or reframe for social.",
+        summary:
+          "Re-encodes only the picture with FFmpeg's crop filter, copying the audio track through untouched.",
+        keywords: ["crop video", "remove black bars", "reframe", "aspect ratio", "trim edges", "square"],
+        isNew: true,
+      },
+      {
+        name: "Rotate Video",
+        slug: "rotate",
+        description: "Turn a sideways video upright, or mirror it horizontally or vertically.",
+        summary:
+          "Bakes the rotation into the frames rather than setting a metadata flag players ignore inconsistently.",
+        keywords: ["rotate video", "flip video", "sideways", "upside down", "mirror", "portrait"],
+        isNew: true,
+      },
+      {
+        name: "Watermark Video",
+        slug: "watermark",
+        description: "Stamp a logo or image onto every frame, at the corner and opacity you choose.",
+        summary:
+          "Scales the overlay relative to the video width and adjusts its alpha, so a transparent PNG stays transparent.",
+        keywords: ["video watermark", "add logo", "brand video", "overlay image", "copyright"],
         isNew: true,
       },
     ],

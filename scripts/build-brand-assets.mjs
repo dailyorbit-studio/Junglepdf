@@ -5,11 +5,17 @@
 // already a dependency (Next pulls it in), so this costs nothing extra.
 //
 // Run: node scripts/build-brand-assets.mjs
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
+
+// Counted from the registry rather than typed in: this card was still claiming
+// 57 tools after twenty-one more had shipped.
+const TOOL_COUNT = (
+  readFileSync(root + "src/lib/tools.ts", "utf8").match(/^\s+slug: "[a-z0-9-]+",\r?$/gm) ?? []
+).length - 4; // the four category slugs use the same shape
 
 // Must track the @theme tokens in src/app/globals.css. When the accent moved
 // from teal to jungle green, these did not follow, and the tab icon and social
@@ -63,7 +69,7 @@ const ogCard = `
   <text x="96" y="366" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="${INK}">Free PDF, image, audio and video</text>
   <text x="96" y="440" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="${CANOPY_DARK}">tools that run in your browser</text>
 
-  <text x="96" y="524" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="34" fill="${INK_SOFT}">57 tools · nothing is ever uploaded · no sign-up</text>
+  <text x="96" y="524" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="34" fill="${INK_SOFT}">${TOOL_COUNT} tools · nothing is ever uploaded · no sign-up</text>
 
   <rect x="96" y="562" width="180" height="8" rx="4" fill="${CANOPY}"/>
 </svg>`;

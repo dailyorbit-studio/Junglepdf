@@ -96,6 +96,10 @@ export function toolMetadata({
     title,
     description,
     path: `/${category}/${slug}/`,
-    keywords: tool ? [tool.name.toLowerCase(), ...(tool.keywords ?? [])] : undefined,
+    // Deduped: several tools list their own name among their search keywords,
+    // which produced "crop video,crop video" in the meta tag.
+    keywords: tool
+      ? [...new Set([tool.name.toLowerCase(), ...(tool.keywords ?? [])])]
+      : undefined,
   });
 }

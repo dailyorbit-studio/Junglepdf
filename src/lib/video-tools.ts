@@ -726,3 +726,282 @@ export function estimateGifBytes(
   // Wildly approximate, which is why the UI presents it as "roughly".
   return Math.round(seconds * fps * width * height * 0.12);
 }
+
+/* ─── Crop ─────────────────────────────────────────────────────────────── */
+
+export interface CropRect {
+  /** All four in source pixels, origin top-left. */
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Cut a rectangle out of the frame.
+ *
+ * Unlike trimming, cropping cannot be done with `-c copy` — the picture
+ * itself changes, so the video stream is re-encoded. Audio is still copied
+ * through untouched, which keeps the cost to the video track alone.
+ *
+ * Dimensions are forced even. H.264 4:2:0 chroma subsampling stores one
+ * chroma sample per 2x2 luma block, so an odd width or height makes the
+ * encoder fail outright with "width not divisible by 2" rather than
+ * rounding for you.
+ */
+export async function cropVideo(
+  file: File,
+  rect: CropRect,
+  onProgress?: ProgressFn
+): Promise<VideoResult> {
+  const ext = sourceExtension(file);
+
+  const even = (n: number) => Math.max(2, Math.floor(n / 2) * 2);
+  const w = even(rect.width);
+  const h = even(rect.height);
+  const x = Math.max(0, Math.floor(rect.x));
+  const y = Math.max(0, Math.floor(rect.y));
+
+  const blob = await runFFmpegJob(
+    {
+      file,
+      inputName: `input.${ext}`,
+      outputName: "output.mp4",
+      args: [
+        "-vf",
+        `crop=${w}:${h}:${x}:${y}`,
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "23",
+        "-c:a",
+        "copy",
+        "-movflags",
+        "+faststart",
+      ],
+      outputMime: "video/mp4",
+      label: "Cropping…",
+      band: [20, 95],
+      failureMessage:
+        "FFmpeg couldn't crop this file. Check that the crop area sits inside the frame — a rectangle that runs past the edge is rejected rather than clamped.",
+    },
+    onProgress
+  );
+
+  onProgress?.("Done", 100);
+
+  return {
+    blob,
+    filename: file.name.replace(/\.[^.]+$/, "") + "_cropped.mp4",
+    originalSize: file.size,
+  };
+}
+
+/* ─── Rotate and flip ──────────────────────────────────────────────────── */
+
+export type VideoTransform = "rotate90" | "rotate180" | "rotate270" | "flipH" | "flipV";
+
+export const VIDEO_TRANSFORM_LABELS: Record<VideoTransform, string> = {
+  rotate90: "90° right",
+  rotate180: "180°",
+  rotate270: "90° left",
+  flipH: "Flip horizontally",
+  flipV: "Flip vertically",
+};
+
+/**
+ * `transpose=1` is clockwise, `2` is counter-clockwise; 180 is two passes
+ * because there is no single transpose value for it. hflip/vflip mirror
+ * without rotating.
+ */
+const TRANSFORM_FILTERS: Record<VideoTransform, string> = {
+  rotate90: "transpose=1",
+  rotate180: "transpose=1,transpose=1",
+  rotate270: "transpose=2",
+  flipH: "hflip",
+  flipV: "vflip",
+};
+
+/**
+ * Turn or mirror the picture.
+ *
+ * This re-encodes. A container-level rotation flag would be free, but it is
+ * only a hint: players honour it inconsistently and most editing software
+ * ignores it, so a file that "looks rotated" here would come out sideways
+ * elsewhere. Baking the rotation into the frames is the version that travels.
+ */
+export async function rotateVideo(
+  file: File,
+  transform: VideoTransform,
+  onProgress?: ProgressFn
+): Promise<VideoResult> {
+  const ext = sourceExtension(file);
+
+  const blob = await runFFmpegJob(
+    {
+      file,
+      inputName: `input.${ext}`,
+      outputName: "output.mp4",
+      args: [
+        "-vf",
+        TRANSFORM_FILTERS[transform],
+        // Clears any container rotation flag, so the baked-in orientation is
+        // not then rotated a second time by a player that reads metadata.
+        "-metadata:s:v:0",
+        "rotate=0",
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "23",
+        "-c:a",
+        "copy",
+        "-movflags",
+        "+faststart",
+      ],
+      outputMime: "video/mp4",
+      label: "Rotating…",
+      band: [20, 95],
+      failureMessage:
+        "FFmpeg couldn't rotate this file. It may use a codec this build cannot decode.",
+    },
+    onProgress
+  );
+
+  onProgress?.("Done", 100);
+
+  return {
+    blob,
+    filename: file.name.replace(/\.[^.]+$/, "") + "_rotated.mp4",
+    originalSize: file.size,
+  };
+}
+
+/* ─── Watermark ────────────────────────────────────────────────────────── */
+
+export type WatermarkPosition =
+  | "top-left"
+  | "top-right"
+  | "bottom-left"
+  | "bottom-right"
+  | "center";
+
+export const WATERMARK_POSITION_LABELS: Record<WatermarkPosition, string> = {
+  "top-left": "Top left",
+  "top-right": "Top right",
+  "bottom-left": "Bottom left",
+  "bottom-right": "Bottom right",
+  center: "Centre",
+};
+
+/**
+ * Overlay expressions. `W`/`H` are the video's dimensions, `w`/`h` the
+ * overlay's, and `M` is substituted with the margin in pixels below.
+ */
+const OVERLAY_POSITIONS: Record<WatermarkPosition, string> = {
+  "top-left": "M:M",
+  "top-right": "W-w-M:M",
+  "bottom-left": "M:H-h-M",
+  "bottom-right": "W-w-M:H-h-M",
+  center: "(W-w)/2:(H-h)/2",
+};
+
+export interface WatermarkOptions {
+  position: WatermarkPosition;
+  /** 0–1. Applied to the logo's own alpha, so a transparent PNG stays transparent. */
+  opacity: number;
+  /** Logo width as a percentage of the video width, 5–50. */
+  scalePercent: number;
+  /** Gap from the edge, in pixels. Ignored for the centred position. */
+  margin: number;
+}
+
+/**
+ * Stamp a PNG or JPEG onto every frame.
+ *
+ * Two inputs, so this goes through `withFFmpeg` rather than the one-in-one-out
+ * helper. The filter chain scales the logo relative to the video width, then
+ * multiplies its alpha channel — `colorchannelmixer=aa=` rather than a global
+ * opacity, because the latter would knock out the transparency a logo PNG
+ * already carries and leave it sitting on a grey box.
+ */
+export async function watermarkVideo(
+  file: File,
+  watermark: File,
+  options: WatermarkOptions,
+  onProgress?: ProgressFn
+): Promise<VideoResult> {
+  const ext = sourceExtension(file);
+  const markExt = watermark.name.match(/\.([^.]+)$/)?.[1]?.toLowerCase() ?? "png";
+
+  const scale = Math.min(50, Math.max(5, options.scalePercent)) / 100;
+  const opacity = Math.min(1, Math.max(0.05, options.opacity));
+  const margin = Math.max(0, Math.round(options.margin));
+  const overlay = OVERLAY_POSITIONS[options.position].replace(/M/g, String(margin));
+
+  const blob = await withFFmpeg(async (ffmpeg, track) => {
+    const inputName = track(`input.${ext}`);
+    const markName = track(`mark.${markExt}`);
+    const outputName = track("output.mp4");
+
+    await ffmpeg.writeFile(inputName, await fetchFile(file));
+    await ffmpeg.writeFile(markName, await fetchFile(watermark));
+
+    onProgress?.("Stamping…", 25);
+
+    const filter =
+      `[1:v]scale=iw*${scale}*main_w/iw:-1[logo];` +
+      `[logo]format=rgba,colorchannelmixer=aa=${opacity}[wm];` +
+      `[0:v][wm]overlay=${overlay}[out]`;
+
+    const code = await ffmpeg.exec([
+      "-i",
+      inputName,
+      "-i",
+      markName,
+      "-filter_complex",
+      filter,
+      "-map",
+      "[out]",
+      "-map",
+      "0:a?",
+      "-c:v",
+      "libx264",
+      "-preset",
+      "veryfast",
+      "-crf",
+      "23",
+      "-c:a",
+      "copy",
+      "-movflags",
+      "+faststart",
+      outputName,
+    ]);
+
+    if (code !== 0) {
+      throw new Error(
+        "FFmpeg couldn't apply the watermark. Check that the logo is a PNG or JPEG — an SVG has no pixels for FFmpeg to overlay."
+      );
+    }
+
+    onProgress?.("Finishing…", 95);
+
+    return readOutput(
+      ffmpeg,
+      outputName,
+      "video/mp4",
+      "The watermarked video came back empty. The source may use a codec this build cannot decode."
+    );
+  }, onProgress);
+
+  onProgress?.("Done", 100);
+
+  return {
+    blob,
+    filename: file.name.replace(/\.[^.]+$/, "") + "_watermarked.mp4",
+    originalSize: file.size,
+  };
+}

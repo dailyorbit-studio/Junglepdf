@@ -54,7 +54,7 @@ breaks every absolute path). Add a `.nojekyll` file and the CNAME.
    verification via DNS TXT is the least fragile). Then paste the token into
    the commented `verification` block in `src/app/layout.tsx` and redeploy, or
    keep the DNS record — either works.
-2. **Submit the sitemap**: `https://junglepdf.in/sitemap.xml` (66 URLs).
+2. **Submit the sitemap**: `https://junglepdf.in/sitemap.xml` (87 URLs).
 3. **Bing Webmaster Tools** — "Import from Google Search Console" does it in
    one click.
 4. **Request indexing** for the homepage and the four category pages; the rest
@@ -75,7 +75,7 @@ breaks every absolute path). Add a `.nojekyll` file and the CNAME.
 
 - Per-page titles (≤60 chars), descriptions (110–165), canonicals with
   trailing slashes, Open Graph + Twitter cards — via `src/lib/seo.ts`, audited
-  across all 66 pages.
+  across all 87 pages.
 - robots.txt, sitemap.xml, manifest.webmanifest, favicon/icon/apple-icon,
   og-image (regenerate with `node scripts/build-brand-assets.mjs`).
 - Structured data: Organization + WebSite + WebApplication graph site-wide;

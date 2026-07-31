@@ -21,6 +21,9 @@ const MAP = {
   "audio/volume": "volume-high",
   "audio/speed": "gauge-high",
   "audio/reverse": "backward",
+  "audio/silence-remover": "volume-off",
+  "audio/normalize": "wave-square",
+  "audio/pitch": "music",
 
   // ─── Image ───
   "image/compressor": "compress",
@@ -33,6 +36,10 @@ const MAP = {
   "image/watermark": "stamp",
   "image/metadata": "location-crosshairs",
   "image/filters": "sliders",
+  "image/collage": "table-cells",
+  "image/split": "border-all",
+  "image/circle-crop": "circle-dot",
+  "image/png-to-ico": "icons",
 
   // ─── PDF ───
   "pdf/merge-pdf": "layer-group",
@@ -67,6 +74,17 @@ const MAP = {
   "pdf/edit-pdf": "pen-to-square",
   "pdf/annotate-pdf": "highlighter",
   "pdf/redact-pdf": "eye-slash",
+  "pdf/pdf-to-jpg": "panorama",
+  "pdf/pdf-to-png": "image",
+  "pdf/pdf-to-csv": "file-csv",
+  "pdf/csv-to-pdf": "table-list",
+  "pdf/csv-to-excel": "table-columns",
+  "pdf/markdown-to-pdf": "hashtag",
+  "pdf/pdf-metadata": "tags",
+  "pdf/reverse-pdf": "arrow-down-up-across-line",
+  "pdf/n-up-pdf": "grip",
+  "pdf/resize-pdf": "maximize",
+  "pdf/unzip": "box-open",
 
   // ─── Video ───
   "video/trimmer": "film",
@@ -77,6 +95,9 @@ const MAP = {
   "video/merge": "layer-group",
   "video/speed": "gauge-high",
   "video/extract-frames": "images",
+  "video/crop": "crop",
+  "video/rotate": "arrows-rotate",
+  "video/watermark": "certificate",
 };
 
 const FALLBACK = "file";

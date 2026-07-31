@@ -14,10 +14,17 @@ import {
 } from "@/lib/pdf-to-images";
 import { downloadBlob } from "@/lib/download";
 
-export default function PdfToImagesTool() {
+/**
+ * `lockFormat` is what lets /pdf/pdf-to-jpg/ and /pdf/pdf-to-png/ exist as
+ * their own pages without a second copy of this panel. They are the same
+ * conversion — the split is because "pdf to jpg" is what people search for,
+ * not "pdf to images" — so the only difference is that the format picker is
+ * gone and the choice is already made.
+ */
+export default function PdfToImagesTool({ lockFormat }: { lockFormat?: ImageFormat } = {}) {
   const [file, setFile] = useState<File | null>(null);
 
-  const [format, setFormat] = useState<ImageFormat>("image/png");
+  const [format, setFormat] = useState<ImageFormat>(lockFormat ?? "image/png");
   const [dpi, setDpi] = useState<number>(150);
   const [quality, setQuality] = useState(0.92);
   const [allPages, setAllPages] = useState(true);
@@ -94,7 +101,7 @@ export default function PdfToImagesTool() {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className={lockFormat ? "hidden" : undefined}>
               <span className="block text-xs font-medium text-ink-secondary mb-1.5">Format</span>
               <div className="flex gap-2">
                 {([["image/png", "PNG"], ["image/jpeg", "JPG"]] as [ImageFormat, string][]).map(

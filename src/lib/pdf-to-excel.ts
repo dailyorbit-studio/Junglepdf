@@ -21,6 +21,7 @@
  */
 
 import { openForRender } from "./pdf-render";
+import { toCsv } from "./csv";
 import type { ProgressFn } from "./ffmpeg";
 
 export interface PdfToExcelResult {
@@ -157,8 +158,15 @@ function columnLetter(index: number): string {
 }
 
 /** Numbers are written as numbers so Excel can sum them; everything else is text. */
-function cellXml(value: string, ref: string): string {
+function cellXml(value: string, ref: string, textOnly: boolean): string {
   if (value === "") return "";
+
+  // CSV to Excel passes textOnly. Detecting numbers is right when recovering a
+  // table out of a PDF — the figures should add up — and wrong when wrapping a
+  // CSV, where "00123" is an identifier and Number() would silently return 123.
+  if (textOnly) {
+    return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${escapeXml(value)}</t></is></c>`;
+  }
 
   // Strip thousands separators and currency before testing — "1,234.50" and
   // "$99" are numbers to a person, and staying text makes the sheet useless.
@@ -175,11 +183,11 @@ function cellXml(value: string, ref: string): string {
   return `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${escapeXml(value)}</t></is></c>`;
 }
 
-function sheetXml(rows: string[][]): string {
+function sheetXml(rows: string[][], textOnly: boolean): string {
   const body = rows
     .map((cells, r) => {
       const inner = cells
-        .map((value, c) => cellXml(value, `${columnLetter(c)}${r + 1}`))
+        .map((value, c) => cellXml(value, `${columnLetter(c)}${r + 1}`, textOnly))
         .join("");
       return inner ? `<row r="${r + 1}">${inner}</row>` : "";
     })
@@ -202,7 +210,21 @@ function safeSheetName(name: string, used: Set<string>): string {
   return clean;
 }
 
-async function writeXlsx(sheets: { name: string; rows: string[][] }[]): Promise<Blob> {
+export interface WriteXlsxOptions {
+  /**
+   * Write every cell as a string instead of detecting numbers.
+   *
+   * Off by default, which suits PDF extraction. On for CSV conversion, where
+   * preserving leading zeros and stopping Excel reading "SEPT1" as a date is
+   * the entire point of the tool.
+   */
+  textOnly?: boolean;
+}
+
+export async function writeXlsx(
+  sheets: { name: string; rows: string[][] }[],
+  options: WriteXlsxOptions = {}
+): Promise<Blob> {
   const { default: JSZip } = await import("jszip");
   const zip = new JSZip();
 
@@ -259,7 +281,8 @@ ${sheetEntries
 </Relationships>`
   );
 
-  for (const sheet of sheetEntries) zip.file(sheet.path, sheetXml(sheet.rows));
+  for (const sheet of sheetEntries)
+    zip.file(sheet.path, sheetXml(sheet.rows, options.textOnly ?? false));
 
   return zip.generateAsync({
     type: "blob",
@@ -280,11 +303,23 @@ export function describeLimits(): string[] {
   ];
 }
 
-export async function pdfToExcel(
+/**
+ * The extraction half, shared by the XLSX and CSV tools.
+ *
+ * Split out when PDF to CSV arrived: the page-to-grid work is the hard,
+ * heuristic part and there is no version of "keep two copies of it" that
+ * survives the first bug fix.
+ */
+async function extractSheets(
   file: File,
   options: PdfToExcelOptions,
   onProgress?: ProgressFn
-): Promise<PdfToExcelResult> {
+): Promise<{
+  sheets: { name: string; rows: string[][] }[];
+  pageCount: number;
+  rowCount: number;
+  columnCount: number;
+}> {
   onProgress?.("Reading PDF…", 8);
 
   const session = await openForRender(await file.arrayBuffer(), file.name);
@@ -343,31 +378,100 @@ export async function pdfToExcel(
       );
     }
 
-    onProgress?.("Writing workbook…", 88);
-
-    const blob = await writeXlsx(sheets);
-
-    onProgress?.("Done", 100);
-
-    const notes: string[] = [];
-    if (columnCount <= 1) {
-      notes.push(
-        "Only one column was detected, which usually means this PDF is prose rather than a table. The text is there, but there was no grid to recover."
-      );
-    }
-    if (rowCount > 20000) {
-      notes.push("This is a large extraction — expect the workbook to be slow to open.");
-    }
-
-    return {
-      blob,
-      filename: file.name.replace(/\.pdf$/i, "") + ".xlsx",
-      pageCount,
-      rowCount,
-      columnCount,
-      notice: notes.length > 0 ? notes.join(" ") : null,
-    };
+    return { sheets, pageCount, rowCount, columnCount };
   } finally {
     await session.destroy();
   }
+}
+
+/** Shared caveats about what a recovered grid can and cannot be. */
+function gridNotes(columnCount: number, rowCount: number, unit: string): string | null {
+  const notes: string[] = [];
+  if (columnCount <= 1) {
+    notes.push(
+      "Only one column was detected, which usually means this PDF is prose rather than a table. The text is there, but there was no grid to recover."
+    );
+  }
+  if (rowCount > 20000) {
+    notes.push(`This is a large extraction — expect the ${unit} to be slow to open.`);
+  }
+  return notes.length > 0 ? notes.join(" ") : null;
+}
+
+export async function pdfToExcel(
+  file: File,
+  options: PdfToExcelOptions,
+  onProgress?: ProgressFn
+): Promise<PdfToExcelResult> {
+  const { sheets, pageCount, rowCount, columnCount } = await extractSheets(
+    file,
+    options,
+    onProgress
+  );
+
+  onProgress?.("Writing workbook…", 88);
+
+  const blob = await writeXlsx(sheets);
+
+  onProgress?.("Done", 100);
+
+  return {
+    blob,
+    filename: file.name.replace(/\.pdf$/i, "") + ".xlsx",
+    pageCount,
+    rowCount,
+    columnCount,
+    notice: gridNotes(columnCount, rowCount, "workbook"),
+  };
+}
+
+/* ─────────────────────────── PDF → CSV ─────────────────────────── */
+
+export interface PdfToCsvResult {
+  blob: Blob;
+  filename: string;
+  pageCount: number;
+  rowCount: number;
+  columnCount: number;
+  notice: string | null;
+}
+
+/**
+ * The same extraction, written out as CSV.
+ *
+ * Always one file: CSV has no concept of sheets, so per-page splitting would
+ * mean a ZIP, and a single table with the pages appended is what people
+ * actually want to paste into a spreadsheet. Pages are separated by a blank
+ * row, matching what the combined-sheet mode of the Excel tool produces.
+ */
+export async function pdfToCsv(
+  file: File,
+  onProgress?: ProgressFn
+): Promise<PdfToCsvResult> {
+  const { sheets, pageCount, rowCount, columnCount } = await extractSheets(
+    file,
+    { sheetPerPage: false },
+    onProgress
+  );
+
+  onProgress?.("Writing CSV…", 90);
+
+  const rows = sheets.flatMap((sheet) => sheet.rows);
+
+  // The BOM is deliberate. Without it Excel reads a UTF-8 CSV as the system
+  // codepage, and every accented character in the extraction turns to mojibake
+  // on open — the single most common complaint about CSV exports on Windows.
+  const csv = "\uFEFF" + toCsv(rows);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+
+  onProgress?.("Done", 100);
+
+  return {
+    blob,
+    filename: file.name.replace(/\.pdf$/i, "") + ".csv",
+    pageCount,
+    rowCount,
+    columnCount,
+    notice: gridNotes(columnCount, rowCount, "file"),
+  };
 }
