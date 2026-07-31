@@ -1,0 +1,21 @@
+# Netlify build configuration.
+#
+# Security headers are NOT here — they live in public/_headers, which Netlify
+# reads from the published directory. Keeping them in one place avoids the two
+# drifting apart. (vercel.json was removed: this site deploys to Netlify.)
+
+[build]
+  command = "npm run build"
+  # `output: "export"` in next.config.ts writes here. Do not point this at
+  # ".next" — that is the intermediate build, not the static site.
+  publish = "out"
+
+[build.environment]
+  # Match the local toolchain. Netlify's default Node can lag behind what
+  # Next 16 expects.
+  NODE_VERSION = "20"
+
+# No @netlify/plugin-nextjs on purpose. That plugin exists to run Next's
+# server runtime on Netlify Functions; this site is a pure static export with
+# no server to run, and enabling it would replace working static hosting with
+# a serverless layer that has nothing to do.

@@ -1,0 +1,39 @@
+# Security headers for Netlify and Cloudflare Pages.
+#
+# Vercel ignores this file and reads vercel.json instead — keep the two in sync.
+# Files in public/ are copied verbatim into out/, which is where both hosts look.
+#
+# Deliberately NOT set: Cross-Origin-Embedder-Policy. The FFmpeg build here is
+# single-threaded (@ffmpeg/core, not core-mt), so it does not need cross-origin
+# isolation — and COEP would break AdSense, which serves cross-origin frames
+# without CORP headers.
+#
+# The CSP ships as Report-Only on purpose — but the first-party half is already
+# verified. Served from out/ with this policy ENFORCING, all of the following
+# passed with zero violations: same-origin worker, blob: worker, WebAssembly
+# compile, fetch of ffmpeg-core.wasm, the @ffmpeg/util toBlobURL pattern, and a
+# full Extract Pages run through pdf-lib.
+#
+# What is NOT verified is the third-party half: AdSense had no publisher ID to
+# test against, and it pulls from more domains than the obvious ones. Enforcing
+# now could break ad serving later without any visible symptom.
+#
+# So: once AdSense is live, load a page with ads, confirm no violations appear
+# in the console, then rename this header to Content-Security-Policy.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=(), payment=(), usb=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://adservice.google.com https://www.googletagmanager.com https://www.google-analytics.com; worker-src 'self' blob:; child-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' blob: data: https://pagead2.googlesyndication.com https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'
+
+# The vendored FFmpeg core and pdf.js worker are content-addressed by the copy
+# script and never change in place, so they can be cached hard. The 31MB wasm
+# core is the single biggest download on the site.
+/ffmpeg/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/pdfjs/*
+  Cache-Control: public, max-age=31536000, immutable
