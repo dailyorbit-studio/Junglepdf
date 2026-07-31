@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+/* ─── Tailwind v4 CSS-first design tokens ─── */
+@theme inline {
+  /* Typography */
+  /* --font-inter / --font-source-sans come from next/font in layout.tsx */
+  --font-sans: var(--font-inter), var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Surface palette — paper with a faint green cast, so white cards read as
+     light against it rather than as the same flat sheet. Kept very close to
+     neutral: this is a utility site people stare at while working, and a
+     saturated background would fight the tool UI. */
+  --color-paper: #F7FAF6;
+  --color-surface: #FFFFFF;
+  --color-surface-raised: #EFF4EC;
+  --color-border: #DFE7DA;
+  --color-border-subtle: #ECF1E9;
+
+  /* Text hierarchy — deep forest rather than pure neutral grey. */
+  --color-ink: #16211A;
+  --color-ink-secondary: #4A5A50;
+  /* Dark enough to clear AA (4.5:1) on all three surfaces — white 5.40,
+     paper 5.13, raised 4.84. The old muted grey sat at 2.6:1, which is a
+     real failure given this token carries file sizes, hints and captions
+     rather than decoration. */
+  --color-ink-muted: #5A6F63;
+
+  /* Accent — jungle canopy green. 5.02:1 on white, so it is safe for
+     body-size text and not just for large headings. */
+  --color-accent: #15803D;
+  --color-accent-hover: #14652F;
+  --color-accent-subtle: #DCFCE7;
+  --color-secondary: #B45309;
+  --color-secondary-hover: #92400E;
+  --color-secondary-subtle: #FEF3C7;
+
+  /* Category badges — pulled toward things that actually live in a jungle,
+     while keeping the four hues far enough apart to stay distinguishable. */
+  --color-audio: #7E22CE;      /* orchid */
+  --color-audio-subtle: #F6F1FE;
+  --color-image: #0E7490;      /* river */
+  --color-image-subtle: #ECFAFE;
+  --color-pdf: #BE123C;        /* macaw */
+  --color-pdf-subtle: #FFF1F3;
+  --color-video: #C2410C;      /* tiger */
+  --color-video-subtle: #FFF4ED;
+
+  /* Brand — the leaf in the mark. Same value as --color-success today, but a
+     separate token: the logo should not change colour if the success green is
+     ever retuned for contrast. */
+  --color-leaf: #16A34A;
+
+  /* Feedback */
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-error: #DC2626;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Transitions */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Base resets ─── */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* NOTE: `scroll-behavior: smooth` deliberately does NOT live on <html>.
+ *
+ * The App Router scrolls to the top on navigation. With smooth scrolling set
+ * globally, that jump becomes an animation the router does not wait for — the
+ * new page paints, the animation is still running, and it gets cut short. The
+ * symptom is landing on a new page slightly scrolled down, with the header
+ * partly off-screen, which is exactly what following a footer link did.
+ *
+ * Smooth scrolling is now opt-in per interaction (see NavBar's "Browse all"),
+ * where the caller can also honour prefers-reduced-motion. */
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  line-height: 1.65;
+  letter-spacing: -0.01em;
+}
+
+/* ─── Focus ring — accessible, not ugly ─── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-ink);
+}
+
+/* ─── Scrollbar — minimal chrome ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-muted);
+}
+
+/* ─── Ad slot development placeholders ─── */
+.ad-placeholder {
+  border: 1px dashed var(--color-border);
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(0, 0, 0, 0.015) 8px,
+    rgba(0, 0, 0, 0.015) 16px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Prose styling for SEO content sections ─── */
+.prose-tool h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+.prose-tool h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-tool p {
+  color: var(--color-ink-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+.prose-tool ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 1rem;
+}
+.prose-tool li {
+  color: var(--color-ink-secondary);
+  margin-bottom: 0.375rem;
+  line-height: 1.65;
+}
+.prose-tool strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* ─── Smooth drag-over state ─── */
+.dropzone-active {
+  border-color: var(--color-accent) !important;
+  background-color: var(--color-accent-subtle) !important;
+}
+
+/* ─── Consent banner slide-up ─── */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up {
+  animation: slideUp 0.35s var(--ease-smooth) forwards;
+}
