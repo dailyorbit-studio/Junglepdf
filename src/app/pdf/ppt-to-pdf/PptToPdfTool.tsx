@@ -16,7 +16,7 @@ export default function PptToPdfTool() {
       }
       accept=".pptx"
       maxFileSizeMB={100}
-      dropLabel="Drop a PowerPoint file here, or click to browse"
+      dropLabel="Choose a PowerPoint file"
       dropSublabel=".pptx up to 100MB"
       extraOptions={{ includeNotes, numberSlides, landscape }}
       caveatTitle="Content, not slide design"

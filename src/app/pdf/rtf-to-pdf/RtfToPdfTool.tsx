@@ -9,7 +9,7 @@ export default function RtfToPdfTool() {
       convert={(file, options, onProgress) => rtfToPDF(file, options, onProgress)}
       accept=".rtf"
       maxFileSizeMB={25}
-      dropLabel="Drop an RTF file here, or click to browse"
+      dropLabel="Choose an RTF file"
       dropSublabel=".rtf up to 25MB"
       caveatTitle="What comes across from RTF"
       caveats={[

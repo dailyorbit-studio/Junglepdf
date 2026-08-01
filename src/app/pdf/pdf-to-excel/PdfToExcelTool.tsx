@@ -59,7 +59,7 @@ export default function PdfToExcelTool() {
           accept=".pdf"
           maxFileSizeMB={100}
           onFiles={handleFiles}
-          label="Drop a PDF here, or click to browse"
+          label="Choose a PDF"
           sublabel="Up to 100MB"
         />
       )}
@@ -127,14 +127,14 @@ export default function PdfToExcelTool() {
             <button
               onClick={handleConvert}
               disabled={processing}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Converting…" : "Convert to Excel"}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -156,13 +156,13 @@ export default function PdfToExcelTool() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 min-w-[10rem] py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 min-w-[10rem] btn btn-primary"
             >
               Download .xlsx
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Convert another
             </button>

@@ -16,7 +16,7 @@ export default function ExcelToPdfTool() {
       }
       accept=".xlsx"
       maxFileSizeMB={50}
-      dropLabel="Drop an Excel workbook here, or click to browse"
+      dropLabel="Choose an Excel workbook"
       dropSublabel=".xlsx up to 50MB"
       extraOptions={{ landscape, headerRow, allSheets }}
       caveatTitle="What comes across from a spreadsheet"

@@ -10,11 +10,17 @@
  * multi-minute wait. The UI says so before you start rather than after.
  */
 
-import { runFFmpegJob, withFFmpeg, readOutput, fetchFile, type ProgressFn } from "./ffmpeg";
+import {
+  runFFmpegJob,
+  withFFmpeg,
+  readOutput,
+  fetchFile,
+  hasAudioStream,
+  type ProgressFn,
+} from "./ffmpeg";
 import { toTimestamp } from "./media-info";
 import { createZip, type ZipEntry } from "./zip";
 import { atempoChain } from "./audio-speed";
-import type { FFmpeg } from "@ffmpeg/ffmpeg";
 
 function sourceExtension(file: File): string {
   return file.name.match(/\.([^.]+)$/)?.[1]?.toLowerCase() ?? "mp4";
@@ -64,7 +70,7 @@ export async function trimVideo(
       label: "Trimming…",
       band: [30, 90],
       failureMessage:
-        "FFmpeg couldn't trim this file. The container may not support copying streams — try converting it to MP4 first.",
+        "This video couldn't be trimmed. Some formats can't be cut without being re-encoded first — converting it to MP4 usually fixes it.",
     },
     onProgress
   );
@@ -94,7 +100,7 @@ export async function muteVideo(file: File, onProgress?: ProgressFn): Promise<Vi
       label: "Removing audio…",
       band: [30, 90],
       failureMessage:
-        "FFmpeg couldn't process this file. It may be corrupted, or use a container that can't be rewritten without re-encoding.",
+        "The audio couldn't be removed from this video. It may be damaged, or saved in a format that can't be changed without re-encoding the picture.",
     },
     onProgress
   );
@@ -148,6 +154,27 @@ export const VIDEO_FORMATS: Record<VideoFormat, VideoFormatSpec> = {
   },
 };
 
+/** Extensions that mean "already this container". */
+const EXTENSION_TO_FORMAT: Record<string, VideoFormat> = {
+  mp4: "mp4",
+  m4v: "mp4",
+  webm: "webm",
+  mkv: "mkv",
+};
+
+/**
+ * Which of our output containers is this file already in?
+ *
+ * Ruled out in the UI. Converting an MP4 to an MP4 costs a full re-encode —
+ * minutes of WebAssembly work — to arrive back where you started, with the
+ * picture measurably worse than when you set off.
+ */
+export function detectSourceFormat(file: File): VideoFormat | null {
+  const ext = file.name.match(/\.([^.]+)$/)?.[1]?.toLowerCase();
+  if (!ext) return null;
+  return EXTENSION_TO_FORMAT[ext] ?? null;
+}
+
 /** Constant Rate Factor: lower is better quality and a larger file. */
 export const CRF_PRESETS = [
   { value: 20, label: "High", note: "Near-transparent. Large files." },
@@ -174,7 +201,7 @@ export async function convertVideo(
       label: `Encoding ${spec.label}… this takes a while`,
       band: [25, 92],
       failureMessage:
-        `FFmpeg couldn't convert this file to ${spec.label}. It may be corrupted, or use a codec this build can't decode.`,
+        `This video couldn't be converted to ${spec.label}. It may be damaged, or saved in a format these tools can't read.`,
     },
     onProgress
   );
@@ -248,7 +275,7 @@ export async function videoToGif(
 
     if (paletteExit !== 0) {
       throw new Error(
-        "FFmpeg couldn't read this video. It may be corrupted, or use a codec this build can't decode."
+        "This video couldn't be read. It may be damaged, or saved in a format these tools can't open."
       );
     }
 
@@ -267,7 +294,7 @@ export async function videoToGif(
       ]);
 
       if (gifExit !== 0) {
-        throw new Error("FFmpeg couldn't build the GIF from this video.");
+        throw new Error("The GIF couldn't be created from this video. Try a shorter range or a smaller width.");
       }
     } finally {
       ffmpeg.off("progress", handleProgress);
@@ -338,7 +365,7 @@ export async function compressVideo(
       label: "Compressing… this takes a while",
       band: [25, 92],
       failureMessage:
-        "FFmpeg couldn't compress this file. It may be corrupted, or use a codec this build can't decode.",
+        "This video couldn't be compressed. It may be damaged, or saved in a format these tools can't read.",
     },
     onProgress
   );
@@ -387,7 +414,7 @@ export async function changeVideoSpeed(
 
     await ffmpeg.writeFile(inputName, await fetchFile(file));
 
-    const hasAudio = await probeHasAudio(ffmpeg, inputName);
+    const hasAudio = await hasAudioStream(ffmpeg, inputName);
 
     onProgress?.(`Retiming to ${speed}×…`, 30);
 
@@ -422,7 +449,7 @@ export async function changeVideoSpeed(
 
       if (exit !== 0) {
         throw new Error(
-          "FFmpeg couldn't retime this video. It may be corrupted, or use a codec this build can't decode."
+          "This video's speed couldn't be changed. It may be damaged, or saved in a format these tools can't read."
         );
       }
     } finally {
@@ -508,7 +535,7 @@ export async function mergeVideos(
 
       await ffmpeg.writeFile(inputName, await fetchFile(file));
 
-      const hasAudio = await probeHasAudio(ffmpeg, inputName);
+      const hasAudio = await hasAudioStream(ffmpeg, inputName);
       if (!hasAudio) paddedSilence = true;
 
       // Letterbox rather than stretch — a portrait phone clip next to a
@@ -536,7 +563,7 @@ export async function mergeVideos(
 
       if (exit !== 0) {
         throw new Error(
-          `FFmpeg couldn't read "${file.name}". It may be corrupted, or use a codec this build can't decode.`
+          `"${file.name}" couldn't be read. It may be damaged, or saved in a format these tools can't open.`
         );
       }
 
@@ -557,7 +584,7 @@ export async function mergeVideos(
     ]);
 
     if (exit !== 0) {
-      throw new Error("FFmpeg couldn't join the normalised clips.");
+      throw new Error("The clips were prepared but couldn't be joined into one video.");
     }
 
     const blob = await readOutput(
@@ -631,7 +658,7 @@ export async function extractFrames(
 
       if (exit !== 0) {
         throw new Error(
-          "FFmpeg couldn't read this video. It may be corrupted, or use a codec this build can't decode."
+          "This video couldn't be read. It may be damaged, or saved in a format these tools can't open."
         );
       }
     } finally {
@@ -683,36 +710,6 @@ export async function extractFrames(
 }
 
 /* ─── Shared ───────────────────────────────────────────────────────────── */
-
-/**
- * Does this file carry an audio stream?
- *
- * Asked by merge and speed, both of which build a filter graph that references
- * `[0:a]` and would fail outright on a silent clip. There is no ffprobe in
- * this build, but running FFmpeg with no output makes it dump the stream table
- * to the log on its way to exiting non-zero, which is enough to read.
- */
-async function probeHasAudio(ffmpeg: FFmpeg, name: string): Promise<boolean> {
-  let found = false;
-
-  const onLog = ({ message }: { message: string }) => {
-    if (/Stream #\d+:\d+.*: Audio:/.test(message)) found = true;
-  };
-
-  ffmpeg.on("log", onLog);
-  try {
-    // Exits non-zero ("At least one output file must be specified") after
-    // printing the stream table. That is the intended path, not a failure.
-    await ffmpeg.exec(["-i", name]);
-  } catch {
-    // Some builds reject rather than returning a code. Either way the log
-    // handler has already seen whatever streams were printed.
-  } finally {
-    ffmpeg.off("log", onLog);
-  }
-
-  return found;
-}
 
 /** Rough GIF size estimate, for warning before a 60MB surprise. */
 export function estimateGifBytes(

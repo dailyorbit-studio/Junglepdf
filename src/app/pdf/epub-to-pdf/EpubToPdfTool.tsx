@@ -9,7 +9,7 @@ export default function EpubToPdfTool() {
       convert={(file, options, onProgress) => epubToPDF(file, options, onProgress)}
       accept=".epub"
       maxFileSizeMB={100}
-      dropLabel="Drop an EPUB here, or click to browse"
+      dropLabel="Choose an EPUB"
       dropSublabel=".epub up to 100MB"
       caveatTitle="How the book is laid out"
       caveats={[

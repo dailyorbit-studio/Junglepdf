@@ -68,8 +68,17 @@ const ogCard = `
   <rect x="96" y="562" width="180" height="8" rx="4" fill="${CANOPY}"/>
 </svg>`;
 
+// The three under src/app are Next.js metadata file conventions — the framework
+// finds them by name and emits the <link> tags itself, so they cannot be linked
+// to directly from markup or handed to anyone.
+//
+// public/images/logo.png exists for everywhere that needs a plain URL to the
+// logo instead: an <img> tag, a directory listing, a press kit, an email
+// signature. It is the same mark the header draws (BrandMark on a bg-accent
+// tile) and the same one the favicon uses, so all three stay one picture.
 const outputs = [
   ["public/og-image.png", ogCard, null],
+  ["public/images/logo.png", mark(512), 512],
   ["src/app/apple-icon.png", mark(180), 180],
   ["src/app/icon.png", mark(512), 512],
 ];

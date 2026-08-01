@@ -9,7 +9,7 @@ export default function HwpToPdfTool() {
       convert={(file, options, onProgress) => hwpToPDF(file, options, onProgress)}
       accept=".hwpx"
       maxFileSizeMB={50}
-      dropLabel="Drop an HWPX file here, or click to browse"
+      dropLabel="Choose an HWPX file"
       dropSublabel=".hwpx up to 50MB — classic .hwp is not readable"
       caveatTitle="What this can and cannot do"
       caveats={describeLosses()}

@@ -77,7 +77,9 @@ breaks every absolute path). Add a `.nojekyll` file and the CNAME.
   trailing slashes, Open Graph + Twitter cards — via `src/lib/seo.ts`, audited
   across all 66 pages.
 - robots.txt, sitemap.xml, manifest.webmanifest, favicon/icon/apple-icon,
-  og-image (regenerate with `node scripts/build-brand-assets.mjs`).
+  og-image, and `public/images/logo.png` — the linkable copy of the mark, for
+  anything that needs a plain URL rather than a Next metadata file. All
+  regenerate together with `node scripts/build-brand-assets.mjs`.
 - Structured data: Organization + WebSite + WebApplication graph site-wide;
   BreadcrumbList, FAQPage, HowTo, WebApplication per tool; ItemList per
   category.

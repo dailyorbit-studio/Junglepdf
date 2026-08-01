@@ -100,7 +100,7 @@ export async function changeAudioSpeed(
       label: `Retiming to ${speed}×…`,
       band: [30, 92],
       failureMessage:
-        "FFmpeg couldn't retime this file. It may be corrupted, or use a codec this build can't decode.",
+        "This file's speed couldn't be changed. It may be damaged, or saved in a format these tools can't read.",
     },
     onProgress
   );

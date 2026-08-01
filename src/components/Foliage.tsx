@@ -1,167 +1,186 @@
 /**
- * The jungle motif: one leaf shape, three arrangements.
+ * Botanical shapes for the jungle theme.
  *
- * Inline SVG rather than image assets, for the same reasons as the brand mark
- * — no third-party request, no second file per size, and the colours come from
- * the theme tokens so a palette change carries through.
+ * The theme was originally only a palette swap — green tokens on an otherwise
+ * neutral layout — which read as "a site that happens to be green" rather than
+ * as JunglePDF. These are the actual foliage.
  *
- * All three are decorative: `aria-hidden` and `pointer-events-none`, so they
- * never sit between a reader and a control. The backdrop and the band are
- * absolutely positioned and expect a `relative` parent.
+ * Rules they follow, because this is a utility site and not a wallpaper:
  *
- * Two rules the first version broke, both of which made the motif read as
- * smudges rather than as foliage:
- *
- * 1. **Nothing overlaps running text.** A 205px leaf sat behind the opening
- *    words of the h1. Even at 9% that is texture under text, which is the one
- *    place a background must stay flat.
- * 2. **Faint means invisible, not subtle.** 8–10% green over the paper token
- *    lands at rgb(227,242,231) — a delta of 20/8/15, below what most screens
- *    at typical brightness resolve. The shapes now sit where they can afford
- *    to be seen, so they can be light without being nothing.
+ *  - Decoration lives in the chrome (hero, footer, section headers) and never
+ *    behind a tool's working area. Nothing here sits under a form control.
+ *  - Every instance is `aria-hidden` and `pointer-events-none`. A screen
+ *    reader announcing "leaf, leaf, leaf" before the search box would be worse
+ *    than no theme at all.
+ *  - Inline SVG, no image requests. The site's whole claim is that it talks to
+ *    no one, and the CSP blocks third-party origins anyway.
+ *  - Opacity stays low enough that text contrast is unaffected. The ratios
+ *    measured for the palette assume a plain surface behind the type.
  */
 
-/** The shared outline — a leaf with a midrib, on a 24 grid. */
-function LeafShape({ midrib = true }: { midrib?: boolean }) {
-  return (
-    <>
-      <path
-        d="M21 3c0 9.4-6.3 15.5-14 15.5a8 8 0 0 1-3.3-.7C3.2 9.4 9.8 3 21 3z"
-        fill="currentColor"
-      />
-      {/*
-        The midrib is drawn in the surface colour, so it only reads on a leaf
-        solid enough to carry it. On the washed-out backdrop leaves it added
-        noise and no shape, which is why they opt out.
-      */}
-      {midrib && (
-        <path
-          d="M21 3C14.4 5.9 9.4 10.8 6.4 18"
-          stroke="var(--color-surface)"
-          strokeWidth="1.4"
-          strokeLinecap="round"
-          fill="none"
-          opacity="0.55"
-        />
-      )}
-    </>
-  );
-}
+type ShapeProps = {
+  className?: string;
+  style?: React.CSSProperties;
+};
 
-/**
- * A single leaf, coloured by the surrounding `text-*` class. Used beside the
- * category headings.
- */
-export function Leaf({ className }: { className?: string }) {
+function Svg({ className, style, children }: ShapeProps & { children: React.ReactNode }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true" focusable="false">
-      <LeafShape />
+    <svg
+      viewBox="0 0 64 64"
+      fill="none"
+      className={className}
+      style={style}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {children}
     </svg>
   );
 }
 
+/** Almond leaf with a midrib and side veins. The workhorse shape. */
+export function Leaf(props: ShapeProps) {
+  return (
+    <Svg {...props}>
+      <path d="M32 3 C15 17 6 36 32 61 C58 36 49 17 32 3 Z" fill="currentColor" />
+      <path
+        d="M32 59 V7"
+        stroke="#fff"
+        strokeWidth="1.6"
+        opacity=".45"
+        strokeLinecap="round"
+      />
+      <path
+        d="M32 16 C27 19 23 23 21 28 M32 26 C26 29 21 34 19 40 M32 36 C27 39 24 44 23 49
+           M32 16 C37 19 41 23 43 28 M32 26 C38 29 43 34 45 40 M32 36 C37 39 40 44 41 49"
+        stroke="#fff"
+        strokeWidth="1.1"
+        opacity=".3"
+        strokeLinecap="round"
+      />
+    </Svg>
+  );
+}
+
+/** Split-leaf monstera — the shape most people picture when they read "jungle". */
+export function Monstera(props: ShapeProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M32 4 C43 7 53 16 56 27 L41 31 L55 36 C54 43 50 50 44 55 L38 44 L39 58
+           C36 60 34 61 32 59 C30 61 28 60 25 58 L26 44 L20 55 C14 50 10 43 9 36
+           L23 31 L8 27 C11 16 21 7 32 4 Z"
+        fill="currentColor"
+      />
+      <path d="M32 57 V9" stroke="#fff" strokeWidth="1.5" opacity=".4" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+/** Fern frond — elongated leaflets swept up along a curving stem. */
+export function Frond(props: ShapeProps) {
+  return (
+    <Svg {...props}>
+      <path
+        d="M33 62 C33 46 32 24 30 5"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <g fill="currentColor">
+        <ellipse cx="22" cy="52" rx="12" ry="2.6" transform="rotate(-34 22 52)" />
+        <ellipse cx="43" cy="53" rx="12" ry="2.6" transform="rotate(34 43 53)" />
+        <ellipse cx="22" cy="42" rx="10.5" ry="2.4" transform="rotate(-36 22 42)" />
+        <ellipse cx="42" cy="43" rx="10.5" ry="2.4" transform="rotate(36 42 43)" />
+        <ellipse cx="22.5" cy="32" rx="9" ry="2.2" transform="rotate(-38 22.5 32)" />
+        <ellipse cx="40" cy="33" rx="9" ry="2.2" transform="rotate(38 40 33)" />
+        <ellipse cx="23.5" cy="23" rx="7" ry="1.9" transform="rotate(-40 23.5 23)" />
+        <ellipse cx="37.5" cy="24" rx="7" ry="1.9" transform="rotate(40 37.5 24)" />
+        <ellipse cx="25" cy="15" rx="5" ry="1.6" transform="rotate(-42 25 15)" />
+        <ellipse cx="35" cy="16" rx="5" ry="1.6" transform="rotate(42 35 16)" />
+      </g>
+    </Svg>
+  );
+}
+
+/** Palm fan — blades radiating from one base point. Reads as undergrowth. */
+export function Palm(props: ShapeProps) {
+  return (
+    <Svg {...props}>
+      <g fill="currentColor">
+        <path d="M32 62 C30 44 22 28 8 16 C20 22 30 34 32 50 Z" />
+        <path d="M32 62 C34 44 42 28 56 16 C44 22 34 34 32 50 Z" />
+        <path d="M32 62 C29 42 26 24 24 6 C31 20 34 40 33 56 Z" />
+        <path d="M32 62 C35 42 38 24 40 6 C33 20 30 40 31 56 Z" />
+        <path d="M32 62 C28 46 18 34 4 30 C18 32 29 40 33 54 Z" />
+        <path d="M32 62 C36 46 46 34 60 30 C46 32 35 40 31 54 Z" />
+      </g>
+    </Svg>
+  );
+}
+
 /**
- * The hero canopy.
+ * Hero backdrop: canopy light from above, foliage crowding in from the edges.
  *
- * A soft green wash across the top, plus a frond cluster in the top-right
- * corner — the one part of the hero with no text in it, because the artwork
- * column lives there and the artwork is multiplied over the background. The
- * cluster only appears from `lg`, since below that the copy spans the full
- * width and there is no empty corner to grow into.
+ * Everything is pinned to the container's corners rather than laid out in
+ * flow, so it cannot push the headline or the tool links around. The centre is
+ * deliberately left empty — that is where the type sits.
+ *
+ * The shapes are positioned past the section's edges on purpose, which is why
+ * the hero carries `overflow-hidden`. Anything placed inside that hero is
+ * therefore clipped to it and cannot use an absolutely-positioned overlay that
+ * needs to extend below the fold.
  */
-export function CanopyBackdrop() {
+export function CanopyBackdrop({ className = "" }: { className?: string }) {
   return (
     <div
-      className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+      className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       aria-hidden="true"
     >
-      {/*
-        The wash carries the theme on its own at every width — it is what makes
-        the hero read as green rather than as grey paper with leaves on it.
-        Anchored top-right so it strengthens the same corner the cluster fills.
-      */}
+      {/* Shaft of canopy light washing down from the top. */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-x-0 top-0 h-72"
         style={{
           background:
-            "radial-gradient(70% 90% at 88% -10%, var(--color-accent-subtle) 0%, transparent 62%)",
+            "linear-gradient(180deg, color-mix(in srgb, var(--color-accent) 12%, transparent) 0%, transparent 100%)",
         }}
       />
 
-      {/*
-        Fanned from a single corner point like a real frond rather than
-        scattered at unrelated angles. Sizes and opacities step down as they
-        move inward, so the cluster fades toward the text rather than stopping
-        at an edge.
-      */}
-      <div className="hidden lg:block absolute -top-16 -right-16 w-[26rem] h-[26rem]">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className="absolute inset-0 w-full h-full text-leaf opacity-[0.16] rotate-[35deg]"
-        >
-          <LeafShape midrib={false} />
-        </svg>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className="absolute top-16 right-24 w-72 h-72 text-accent opacity-[0.13] rotate-[85deg]"
-        >
-          <LeafShape midrib={false} />
-        </svg>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          className="absolute top-40 right-2 w-56 h-56 text-leaf opacity-[0.10] rotate-[130deg]"
-        >
-          <LeafShape midrib={false} />
-        </svg>
-      </div>
+      {/* Top-left cluster. */}
+      <Monstera className="absolute -left-10 -top-12 w-44 h-44 text-accent opacity-[0.10] rotate-[18deg]" />
+      <Leaf className="absolute left-16 -top-8 w-24 h-24 text-accent opacity-[0.13] -rotate-[28deg]" />
+      <Frond className="absolute -left-6 top-28 w-28 h-28 text-accent opacity-[0.08] rotate-[8deg] hidden sm:block" />
 
-      {/*
-        Nothing on the left. There was a leaf tucked into that corner, and a
-        rotated shape's bounding box is much larger than its width — a 224px
-        leaf at 205° measured 298px and reached back under the headline. The
-        left half of the hero holds the h1, the paragraph and the search box at
-        every breakpoint, so it is simply not a place for texture.
-      */}
+      {/* Top-right cluster — larger, since the artwork column sits below it. */}
+      <Monstera className="absolute -right-14 -top-16 w-56 h-56 text-accent opacity-[0.09] -rotate-[24deg]" />
+      <Leaf className="absolute right-24 -top-6 w-20 h-20 text-accent opacity-[0.12] rotate-[38deg] hidden sm:block" />
+
+      {/* Bottom edge, growing up into the section. */}
+      <Palm className="absolute -bottom-16 left-1/4 w-40 h-40 text-accent opacity-[0.07] hidden lg:block" />
+      <Frond className="absolute -bottom-12 -right-8 w-36 h-36 text-accent opacity-[0.09] -rotate-[12deg] hidden sm:block" />
     </div>
   );
 }
 
 /**
- * A row of leaves growing up out of the footer's top edge.
- *
- * `bottom-full` on a `relative` footer puts them just above the border rather
- * than inside the padding, so they read as growth against the page. All one
- * colour and one opacity: at this size the alternating tints of the first
- * version just looked like inconsistency.
+ * A row of foliage silhouettes along the top edge of the footer, so the page
+ * ends in undergrowth rather than a plain rule.
  */
 export function UndergrowthBand() {
-  const leaves = [
-    { left: "6%", size: "h-5 w-5", rotate: "-rotate-[14deg]" },
-    { left: "23%", size: "h-4 w-4", rotate: "rotate-[10deg]" },
-    { left: "47%", size: "h-6 w-6", rotate: "-rotate-[22deg]" },
-    { left: "71%", size: "h-4 w-4", rotate: "rotate-[18deg]" },
-    { left: "90%", size: "h-5 w-5", rotate: "-rotate-[8deg]" },
-  ];
-
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 bottom-full h-6 overflow-hidden select-none"
+      className="pointer-events-none absolute inset-x-0 -top-8 h-16 overflow-hidden"
       aria-hidden="true"
     >
-      {leaves.map((leaf) => (
-        <svg
-          key={leaf.left}
-          viewBox="0 0 24 24"
-          fill="none"
-          style={{ left: leaf.left }}
-          className={`absolute bottom-0 ${leaf.size} ${leaf.rotate} text-leaf opacity-30`}
-        >
-          <LeafShape midrib={false} />
-        </svg>
-      ))}
+      <div className="relative mx-auto h-full max-w-6xl">
+        <Palm className="absolute bottom-0 left-[4%] w-16 h-16 text-accent opacity-[0.12]" />
+        <Frond className="absolute bottom-0 left-[18%] w-14 h-14 text-accent opacity-[0.10] rotate-[6deg] hidden sm:block" />
+        <Leaf className="absolute bottom-0 left-[32%] w-12 h-12 text-accent opacity-[0.14] -rotate-[12deg] hidden sm:block" />
+        <Monstera className="absolute bottom-0 left-[47%] w-16 h-16 text-accent opacity-[0.10] rotate-[4deg]" />
+        <Leaf className="absolute bottom-0 left-[62%] w-12 h-12 text-accent opacity-[0.13] rotate-[16deg] hidden sm:block" />
+        <Frond className="absolute bottom-0 left-[76%] w-14 h-14 text-accent opacity-[0.10] -rotate-[8deg] hidden sm:block" />
+        <Palm className="absolute bottom-0 right-[4%] w-16 h-16 text-accent opacity-[0.12]" />
+      </div>
     </div>
   );
 }

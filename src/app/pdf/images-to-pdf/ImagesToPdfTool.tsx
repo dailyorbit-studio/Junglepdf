@@ -149,7 +149,7 @@ export default function ImagesToPdfTool() {
               maxFileSizeMB={50}
               maxFiles={MAX_FILES}
               onFiles={handleFiles}
-              label={files.length === 0 ? "Drop images here, or click to browse" : "Add more images"}
+              label={files.length === 0 ? "Choose images" : "Add more images"}
               sublabel={`JPEG, PNG, WebP, AVIF, BMP · ${MAX_FILES - files.length} slots remaining`}
             />
           )}
@@ -232,7 +232,7 @@ export default function ImagesToPdfTool() {
             <button
               onClick={handleConvert}
               disabled={processing}
-              className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="btn btn-primary btn-block"
             >
               {processing
                 ? "Building PDF…"
@@ -260,13 +260,13 @@ export default function ImagesToPdfTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download {result.filename}
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Start over
             </button>

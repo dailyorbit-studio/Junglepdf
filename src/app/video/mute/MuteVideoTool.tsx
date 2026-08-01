@@ -86,7 +86,7 @@ export default function MuteVideoTool() {
           accept=".mp4,.mkv,.avi,.webm,.mov,.wmv,.flv"
           maxFileSizeMB={2048}
           onFiles={handleFiles}
-          label="Drop a video here, or click to browse"
+          label="Choose a video"
           sublabel="MP4, MKV, AVI, WebM, MOV — up to 2GB"
         />
       )}
@@ -127,14 +127,14 @@ export default function MuteVideoTool() {
             <button
               onClick={handleMute}
               disabled={processing}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Removing audio…" : "Remove audio track"}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -151,13 +151,13 @@ export default function MuteVideoTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download muted video
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Mute another
             </button>

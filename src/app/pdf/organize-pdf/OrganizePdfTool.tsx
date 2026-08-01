@@ -115,7 +115,7 @@ export default function OrganizePdfTool() {
           accept=".pdf"
           maxFileSizeMB={100}
           onFiles={handleFiles}
-          label="Drop a PDF here, or click to browse"
+          label="Choose a PDF"
           sublabel="Up to 100MB · every page is rendered as a preview"
         />
       )}
@@ -229,14 +229,14 @@ export default function OrganizePdfTool() {
             <button
               onClick={handleApply}
               disabled={processing || kept.length === 0}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Rebuilding…" : `Save ${kept.length} page${kept.length === 1 ? "" : "s"}`}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -258,13 +258,13 @@ export default function OrganizePdfTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download PDF
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Organize another
             </button>

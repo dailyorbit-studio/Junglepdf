@@ -139,7 +139,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
       {
         name: "Image Converter",
         slug: "converter",
-        description: "Convert between JPG, PNG, WebP, and AVIF without changing dimensions.",
+        description: "Convert to JPG, PNG, WebP, GIF, BMP, TIFF or ICO without changing dimensions.",
         summary:
           "Re-encodes at full resolution, laying down a white matte when the target format has no alpha.",
         keywords: ["png to jpg", "jpg to png", "webp", "avif", "heic", "format", "transcode"],
@@ -602,13 +602,6 @@ export function categoryHref(categorySlug: string): string {
   return `/${categorySlug}/`;
 }
 
-/** Every tool route, flattened — used by the sitemap. */
-export function allToolHrefs(): string[] {
-  return TOOL_CATEGORIES.flatMap((category) =>
-    category.tools.map((tool) => toolHref(category.slug, tool.slug))
-  );
-}
-
 export function findCategory(slug: string): ToolCategory | undefined {
   return TOOL_CATEGORIES.find((category) => category.slug === slug);
 }
@@ -704,6 +697,43 @@ export function popularFirst(tools: ToolWithCategory[]): ToolWithCategory[] {
     .sort((a, b) => rank(a.tool) - rank(b.tool) || a.i - b.i)
     .map((entry) => entry.tool);
 }
+
+/**
+ * The six tools the homepage hero links to directly.
+ *
+ * The hero used to hold a second copy of the nav's search field. It had to go:
+ * the hero section is `overflow-hidden` so the CanopyBackdrop's foliage — which
+ * is deliberately positioned past the section's edges — cannot spill out and
+ * give the page a horizontal scrollbar. That clip also catches the search
+ * dropdown, which is an absolutely-positioned descendant, and no z-index can
+ * lift a box out of an ancestor's overflow clip. Results were being sliced off
+ * at the section boundary.
+ *
+ * Six direct links are the better answer regardless of the bug. The nav search
+ * is present at every breakpoint already (inline from md up, inside the drawer
+ * below it), and a link you can see beats a field you have to think of the right
+ * word for.
+ *
+ * Cross-category on purpose: the hero is the one place that has to say "this
+ * site does more than PDFs" before you scroll.
+ */
+const HERO_TOOL_KEYS = [
+  "pdf/merge-pdf",
+  "pdf/pdf-to-word",
+  "image/compressor",
+  "audio/video-to-mp3",
+  "video/compress",
+  "pdf/split-pdf",
+] as const;
+
+export const HERO_TOOLS: ToolWithCategory[] = HERO_TOOL_KEYS.map((key) => {
+  const [categorySlug, toolSlug] = key.split("/");
+  const tool = findTool(categorySlug, toolSlug);
+  // Thrown at module scope, so a renamed slug fails the build instead of
+  // quietly dropping a link out of the hero where nobody would notice.
+  if (!tool) throw new Error(`HERO_TOOL_KEYS references an unknown tool: ${key}`);
+  return tool;
+});
 
 /**
  * Tools to suggest at the bottom of a tool page.

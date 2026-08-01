@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import FileDropZone from "@/components/FileDropZone";
 import ProgressBar from "@/components/ProgressBar";
 import ResultBanner from "@/components/ResultBanner";
@@ -8,7 +8,9 @@ import ErrorMessage from "@/components/ErrorMessage";
 import NoticeMessage from "@/components/NoticeMessage";
 import {
   convertImage,
+  detectSourceFormat,
   FORMAT_LABELS,
+  FORMAT_NOTES,
   formatUsesQuality,
   type OutputFormat,
   type ConvertResult,
@@ -22,15 +24,44 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const FORMATS: OutputFormat[] = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+const FORMATS: OutputFormat[] = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/bmp",
+  "image/tiff",
+  "image/x-icon",
+];
 
-export default function ImageConverterTool() {
+/**
+ * Where to land when the format you were on turns out to be the one you just
+ * dropped in. WebP first because it is the best default for almost anyone;
+ * PNG when the source *is* WebP.
+ */
+function pickDefaultFormat(source: OutputFormat | null): OutputFormat {
+  const preference: OutputFormat[] = ["image/webp", "image/png", "image/jpeg"];
+  return preference.find((f) => f !== source) ?? "image/png";
+}
+
+/**
+ * `initialFormat` is what the /convert/<from>-to-<to>/ landing pages use.
+ * Arriving from a search for "webp to png" and finding PNG already selected is
+ * the entire reason those pages beat a generic converter for that query.
+ */
+export default function ImageConverterTool({
+  initialFormat,
+}: {
+  initialFormat?: OutputFormat;
+} = {}) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useObjectUrl();
   const [dimensions, setDimensions] = useState({ w: 0, h: 0 });
 
-  const [format, setFormat] = useState<OutputFormat>("image/webp");
+  const [format, setFormat] = useState<OutputFormat>(initialFormat ?? "image/webp");
   const [quality, setQuality] = useState(0.9);
+
+  const sourceFormat = useMemo(() => (file ? detectSourceFormat(file) : null), [file]);
 
   const [progress, setProgress] = useState(0);
   const [progressLabel, setProgressLabel] = useState("");
@@ -45,6 +76,11 @@ export default function ImageConverterTool() {
       setResult(null);
       setError(null);
       setPreview(selected);
+
+      // Move off the source format rather than leaving a disabled button
+      // selected and the action reading "Convert to JPG" on a JPG.
+      const source = detectSourceFormat(selected);
+      setFormat((current) => (current === source ? pickDefaultFormat(source) : current));
 
       const url = URL.createObjectURL(selected);
       const img = new Image();
@@ -95,11 +131,11 @@ export default function ImageConverterTool() {
     <>
       {!file && (
         <FileDropZone
-          accept=".jpg,.jpeg,.png,.webp,.avif,.bmp,.gif"
+          accept=".jpg,.jpeg,.png,.webp,.avif,.bmp,.gif,.tif,.tiff,.ico"
           maxFileSizeMB={50}
           onFiles={handleFiles}
-          label="Drop an image here, or click to browse"
-          sublabel="JPEG, PNG, WebP, AVIF, BMP, GIF — up to 50MB"
+          label="Choose an image"
+          sublabel="JPEG, PNG, WebP, AVIF, GIF, BMP, TIFF, ICO — up to 50MB"
         />
       )}
 
@@ -127,20 +163,43 @@ export default function ImageConverterTool() {
                   Convert to
                 </span>
                 <div className="flex flex-wrap gap-2">
-                  {FORMATS.map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => setFormat(f)}
-                      className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
-                        format === f
-                          ? "border-accent bg-accent-subtle text-accent"
-                          : "border-border text-ink-muted hover:text-ink"
-                      }`}
-                    >
-                      {FORMAT_LABELS[f]}
-                    </button>
-                  ))}
+                  {FORMATS.map((f) => {
+                    const isSource = f === sourceFormat;
+                    return (
+                      <button
+                        key={f}
+                        onClick={() => setFormat(f)}
+                        disabled={isSource}
+                        // Shown but disabled rather than removed. A button that
+                        // vanishes leaves people hunting for it; one that is
+                        // visibly out of play answers the question instead.
+                        title={isSource ? `This file is already a ${FORMAT_LABELS[f]}` : undefined}
+                        className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                          isSource
+                            ? "border-border-subtle bg-surface-raised text-ink-muted/55 cursor-not-allowed"
+                            : format === f
+                              ? "border-accent bg-accent-subtle text-accent"
+                              : "border-border text-ink-muted hover:text-ink hover:border-ink-muted"
+                        }`}
+                      >
+                        {FORMAT_LABELS[f]}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* One sentence on the chosen format. The point of the tool is
+                    picking one, and "WebP" alone tells a non-technical reader
+                    nothing about whether it is the right answer. */}
+                <p className="mt-2 text-xs text-ink-muted leading-relaxed">
+                  {FORMAT_NOTES[format]}
+                </p>
+
+                {sourceFormat && (
+                  <p className="mt-1 text-xs text-ink-muted">
+                    This file is already a {FORMAT_LABELS[sourceFormat]}, so that option is off.
+                  </p>
+                )}
               </div>
 
               {formatUsesQuality(format) && (
@@ -174,10 +233,25 @@ export default function ImageConverterTool() {
             </p>
           )}
 
-          {format === "image/avif" && (
+          {format === "image/gif" && (
             <NoticeMessage>
-              AVIF encoding is not supported by every browser. If yours can&apos;t produce it, the
-              tool will say so rather than hand you a mislabelled file.
+              GIF holds at most 256 colours, so the palette is rebuilt from your image. Flat
+              graphics and logos survive this well; photographs and gradients will show banding.
+            </NoticeMessage>
+          )}
+
+          {format === "image/x-icon" && dimensions.w > 256 && (
+            <NoticeMessage>
+              ICO can&apos;t store a side longer than 256px, so this will be scaled down from{" "}
+              {dimensions.w} × {dimensions.h} px.
+            </NoticeMessage>
+          )}
+
+          {(format === "image/bmp" || format === "image/tiff") && (
+            <NoticeMessage>
+              {FORMAT_LABELS[format]} is written without compression here, so expect a file
+              several times larger than the original — around{" "}
+              {((dimensions.w * dimensions.h * 3) / (1024 * 1024)).toFixed(1)} MB.
             </NoticeMessage>
           )}
 
@@ -188,14 +262,14 @@ export default function ImageConverterTool() {
             <button
               onClick={handleConvert}
               disabled={processing}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Converting…" : `Convert to ${FORMAT_LABELS[format]}`}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -209,6 +283,7 @@ export default function ImageConverterTool() {
             title={`Converted to ${FORMAT_LABELS[format]}`}
             detail={`${formatBytes(result.originalSize)} → ${formatBytes(result.blob.size)}`}
           />
+          {result.notice && <NoticeMessage>{result.notice}</NoticeMessage>}
           {result.grew && (
             <NoticeMessage>
               The {FORMAT_LABELS[format]}{" "}
@@ -220,13 +295,13 @@ export default function ImageConverterTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download {result.filename}
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Convert another
             </button>

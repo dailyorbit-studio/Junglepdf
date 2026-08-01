@@ -51,10 +51,27 @@
      ever retuned for contrast. */
   --color-leaf: #16A34A;
 
-  /* Feedback */
+  /* Feedback.
+     Each state carries three tokens, not one: the icon/accent colour, a wash
+     to sit the callout on, and an ink dark enough to read on that wash. The
+     callouts used to reach straight for Tailwind's raw palette (bg-red-50,
+     text-green-800, border-amber-200), which meant the one thing on the page
+     that has to be unmistakable was the one thing not driven by the theme.
+     Every ink here clears AA against its own wash. */
   --color-success: #16A34A;
+  --color-success-subtle: #F0FDF4;
+  --color-success-border: #BBF7D0;
+  --color-success-ink: #166534;   /* 6.6:1 on the wash */
+
   --color-warning: #D97706;
+  --color-warning-subtle: #FFFBEB;
+  --color-warning-border: #FDE68A;
+  --color-warning-ink: #92400E;   /* 7.0:1 on the wash */
+
   --color-error: #DC2626;
+  --color-error-subtle: #FEF2F2;
+  --color-error-border: #FECACA;
+  --color-error-ink: #991B1B;     /* 7.6:1 on the wash */
 
   /* Shadows */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
@@ -180,10 +197,105 @@ body {
   font-weight: 600;
 }
 
-/* ─── Smooth drag-over state ─── */
-.dropzone-active {
-  border-color: var(--color-accent) !important;
-  background-color: var(--color-accent-subtle) !important;
+/* ─── Buttons ───────────────────────────────────────────────────────────────
+ *
+ * The primary action was written inline in 48 files and had drifted into four
+ * variants: some carried `disabled:cursor-not-allowed`, some did not, and the
+ * secondary action disagreed with itself about whether disabled meant 40% or
+ * 50% opacity. Which meant the single most important control on every tool page
+ * behaved slightly differently depending on which tool you happened to open.
+ *
+ * Declared in `@layer components` on purpose: Tailwind's utilities layer is
+ * emitted after it, so a `py-2` or `rounded-full` in the markup still overrides
+ * these defaults. The class sets the floor, the markup keeps the last word.
+ */
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    font-weight: 500;
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    transition-property: background-color, border-color, color, box-shadow, transform;
+    transition-duration: 150ms;
+    transition-timing-function: var(--ease-smooth);
+  }
+
+  /* A press that moves. On a tool where the result takes 40 seconds to arrive,
+     the click itself is the only immediate feedback there is. */
+  .btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-primary {
+    background-color: var(--color-accent);
+    color: #fff;
+    box-shadow: var(--shadow-card);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    color: var(--color-ink-secondary);
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-surface-raised);
+    border-color: var(--color-ink-muted);
+    color: var(--color-ink);
+  }
+
+  .btn-block {
+    width: 100%;
+  }
+}
+
+/* ─── Indeterminate progress ───
+ *
+ * FFmpeg reports no progress at all during its first pass, and pdf.js reports
+ * none while a page rasterises. A bar frozen at 0% reads as "hung"; a bar that
+ * is visibly moving reads as "working". */
+@keyframes progressDrift {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(300%); }
+}
+.progress-indeterminate::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 33%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-accent) 65%, transparent),
+    transparent
+  );
+  animation: progressDrift 1.4s var(--ease-smooth) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-indeterminate::after {
+    animation-duration: 3s;
+  }
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 /* ─── Consent banner slide-up ─── */

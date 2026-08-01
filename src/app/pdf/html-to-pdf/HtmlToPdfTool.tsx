@@ -9,7 +9,7 @@ export default function HtmlToPdfTool() {
       convert={(file, options, onProgress) => htmlToPDF(file, options, onProgress)}
       accept=".html,.htm,.xhtml"
       maxFileSizeMB={25}
-      dropLabel="Drop an HTML file here, or click to browse"
+      dropLabel="Choose an HTML file"
       dropSublabel=".html or .htm up to 25MB"
       caveatTitle="Structure, not styling"
       caveats={[

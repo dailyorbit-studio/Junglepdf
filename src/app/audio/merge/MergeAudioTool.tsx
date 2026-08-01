@@ -142,7 +142,7 @@ export default function MergeAudioTool() {
               maxFileSizeMB={200}
               maxFiles={MAX_FILES}
               onFiles={handleFiles}
-              label={files.length === 0 ? "Drop audio files here, or click to browse" : "Add more audio"}
+              label={files.length === 0 ? "Choose audio files" : "Add more audio"}
               sublabel={`MP3, WAV, OGG, M4A, FLAC · ${MAX_FILES - files.length} slots remaining`}
             />
           )}
@@ -186,7 +186,7 @@ export default function MergeAudioTool() {
             <button
               onClick={handleMerge}
               disabled={processing}
-              className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="btn btn-primary btn-block"
             >
               {processing ? "Merging…" : `Merge ${files.length} files`}
             </button>
@@ -203,13 +203,13 @@ export default function MergeAudioTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download merged.wav
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Merge more
             </button>

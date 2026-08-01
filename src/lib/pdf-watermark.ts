@@ -126,27 +126,3 @@ export async function watermarkPDF(
     pageCount,
   };
 }
-
-/**
- * Largest font size that keeps the rotated text inside the page.
- *
- * The UI calls this to cap its slider, so a 200pt watermark on an A4 page
- * cannot run off both edges and become unreadable.
- */
-export function fitFontSize(
-  text: string,
-  pageWidth: number,
-  angle: number,
-  requested: number
-): number {
-  if (text.length === 0) return requested;
-
-  // Helvetica-Bold averages roughly 0.6em per character across mixed case;
-  // exact enough for a cap, and avoids embedding the font just to measure.
-  const estimatedWidthPerPoint = text.length * 0.6;
-  const projected = Math.abs(Math.cos((angle * Math.PI) / 180)) * estimatedWidthPerPoint;
-  if (projected === 0) return requested;
-
-  const maxSize = (pageWidth * 0.9) / projected;
-  return Math.max(8, Math.min(requested, Math.floor(maxSize)));
-}

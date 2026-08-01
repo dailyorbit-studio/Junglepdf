@@ -80,9 +80,19 @@ export default function ToolExplorer() {
                 "Video tools" — the motif only reads as foliage while it stays
                 the colour foliage is. The category colour is already doing its
                 job on the tool icons directly below.
+
+                Tilted because this was the only Leaf on the site drawn bolt
+                upright, and an upright solid-green leaf is the MongoDB mark.
+                Every other instance (CanopyBackdrop, UndergrowthBand) already
+                carries a rotation between 12° and 38°; matching that both kills
+                the resemblance and makes the leaf look grown rather than
+                placed.
+
+                Leaning right, into the heading it sits beside, rather than away
+                from it.
               */}
               <h2 className="flex items-center gap-2 text-lg font-bold text-ink tracking-tight">
-                <Leaf className="w-4 h-4 shrink-0 text-leaf" />
+                <Leaf className="w-4 h-4 shrink-0 text-leaf rotate-[24deg]" />
                 {category.label} tools
               </h2>
               <a

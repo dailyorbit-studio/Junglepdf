@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import AdSlot from "@/components/AdSlot";
-import ToolSearch from "@/components/ToolSearch";
 import ToolExplorer from "@/components/ToolExplorer";
 import { CanopyBackdrop } from "@/components/Foliage";
-import { TOOL_COUNT } from "@/lib/tools";
+import { ToolIcon } from "@/lib/tool-icons";
+import { TOOL_COUNT, HERO_TOOLS } from "@/lib/tools";
 import { SITE_NAME } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 
@@ -51,7 +52,15 @@ const TRUST_POINTS = [
 export default function HomePage() {
   return (
     <>
-      {/* Hero */}
+      {/*
+        Hero.
+
+        overflow-hidden is load-bearing: CanopyBackdrop hangs foliage past every
+        edge (-left-10, -top-12, -bottom-16) and without the clip those spill out
+        and give the whole page a horizontal scrollbar. It also means nothing
+        inside may rely on escaping the section's box — which is what ruled out
+        keeping a search field here. See HERO_TOOLS in lib/tools.ts.
+      */}
       <section className="relative overflow-hidden border-b border-border-subtle">
         <CanopyBackdrop />
 
@@ -59,7 +68,7 @@ export default function HomePage() {
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 sm:pt-20 pb-12 sm:pb-16">
           {/*
             Two columns from lg up. Below that the artwork is dropped rather
-            than stacked: on a phone it would push the search field — the one
+            than stacked: on a phone it would push the tool links — the one
             thing the hero exists to get you to — below the fold.
           */}
           {/*
@@ -86,13 +95,47 @@ export default function HomePage() {
                 uploading a single byte. No accounts, no watermarks, no waiting.
               </p>
 
-              <div className="mt-8 max-w-lg">
-                <ToolSearch variant="hero" placeholder="What do you want to do? Try “compress” or “mp3”…" />
+              {/*
+                Direct links rather than a search field — see HERO_TOOLS in
+                lib/tools.ts for why the field could not stay here.
+
+                Real <Link>s, so these are six crawlable internal links to the
+                site's most-wanted pages sitting in the first screenful. The
+                search box they replaced was a dead end to a crawler.
+              */}
+              <div className="mt-8">
+                <h2 className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-muted">
+                  Popular tools
+                </h2>
+
+                <ul className="mt-3 flex flex-wrap gap-2 max-w-xl">
+                  {HERO_TOOLS.map((tool) => (
+                    <li key={tool.href}>
+                      <Link
+                        href={tool.href}
+                        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-4 text-sm font-medium text-ink-secondary shadow-[var(--shadow-card)] hover:border-accent hover:text-accent transition-colors duration-150"
+                      >
+                        <span
+                          className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${tool.category.subtleClass} ${tool.category.colorClass}`}
+                        >
+                          <ToolIcon category={tool.category.slug} slug={tool.slug} size={12} />
+                        </span>
+                        {tool.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+
+                {/*
+                  No "Browse all N tools" link here. The full grid is the very
+                  next section on this page, so an anchor down to it is asking
+                  someone to click for something a scroll already gives them.
+                */}
               </div>
             </div>
 
             {/*
-              mix-blend-multiply because the JPEG carries a white background
+              mix-blend-multiply because the artwork carries a white background
               and the page is off-white (--color-paper) — without it the
               artwork sits in a visible pale rectangle. Multiply drops the
               white and leaves the flat colours untouched.
@@ -102,13 +145,14 @@ export default function HomePage() {
               the file's real 612×408, which reserves the box before the bytes
               arrive so the hero does not jump.
 
-              home-hero.webp is a derivative of Home.png emitted once with
-              sharp (125KB → 20KB, same pixels). The static export cannot
-              optimize images at build time, so the optimization lives in the
-              asset itself; Home.png stays in the repo as the editable source.
+              Served as PNG on purpose. `output: "export"` means next/image
+              cannot optimize at build time, so whatever is referenced here is
+              exactly what ships: 125KB, against the 20KB a WebP of the same
+              612×408 pixels costs. Worth remembering if the hero ever turns up
+              in a Core Web Vitals report — it is the LCP element.
             */}
             <Image
-              src="/images/home-hero.webp"
+              src="/images/Home.png"
               alt=""
               width={612}
               height={408}

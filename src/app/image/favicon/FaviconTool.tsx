@@ -159,7 +159,7 @@ export default function FaviconTool() {
           accept=".png,.jpg,.jpeg,.webp,.avif"
           maxFileSizeMB={20}
           onFiles={handleFiles}
-          label="Drop your logo here, or click to browse"
+          label="Choose your logo"
           sublabel="PNG, JPEG, WebP, AVIF — square and at least 512px works best"
         />
       )}
@@ -229,14 +229,14 @@ export default function FaviconTool() {
             <button
               onClick={handleGenerate}
               disabled={processing}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Generating…" : "Generate favicon set"}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -273,13 +273,13 @@ export default function FaviconTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.zipBlob, "favicons.zip")}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download favicons.zip
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Start over
             </button>

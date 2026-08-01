@@ -107,7 +107,7 @@ export default function SplitPdfTool() {
           accept=".pdf"
           maxFileSizeMB={100}
           onFiles={handleFiles}
-          label="Drop a PDF file here, or click to browse"
+          label="Choose a PDF file"
           sublabel="PDF — up to 100MB"
         />
       )}
@@ -157,7 +157,7 @@ export default function SplitPdfTool() {
           <button
             onClick={handleSplit}
             disabled={processing || !rangeInput.trim()}
-            className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+            className="btn btn-primary btn-block"
           >
             {processing ? "Splitting…" : "Split PDF"}
           </button>
@@ -197,7 +197,7 @@ export default function SplitPdfTool() {
               <button
                 onClick={downloadAll}
                 disabled={zipping}
-                className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+                className="flex-1 btn btn-primary"
               >
                 {zipping ? "Bundling…" : `Download all ${results.parts.length} as ZIP`}
               </button>
@@ -205,7 +205,7 @@ export default function SplitPdfTool() {
             <button
               onClick={reset}
               disabled={zipping}
-              className={`py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150 ${
+              className={`btn btn-secondary ${
                 results.parts.length > 1 ? "" : "w-full"
               }`}
             >

@@ -77,7 +77,7 @@ export default function PdfToImagesTool() {
           accept=".pdf"
           maxFileSizeMB={100}
           onFiles={handleFiles}
-          label="Drop a PDF here, or click to browse"
+          label="Choose a PDF"
           sublabel="Up to 100MB"
         />
       )}
@@ -205,14 +205,14 @@ export default function PdfToImagesTool() {
             <button
               onClick={handleConvert}
               disabled={processing || (!allPages && !pageSelection.trim())}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Rendering…" : "Convert to images"}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -261,13 +261,13 @@ export default function PdfToImagesTool() {
               onClick={() =>
                 downloadBlob(result.zipBlob, file!.name.replace(/\.pdf$/i, "") + "_images.zip")
               }
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download all as ZIP
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Convert another
             </button>
