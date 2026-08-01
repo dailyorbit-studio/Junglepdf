@@ -6,9 +6,9 @@ import ImageConverterTool from "./ImageConverterTool";
 export const metadata: Metadata = toolMetadata({
   category: "image",
   slug: "converter",
-  title: "Image Converter — JPG, PNG, WebP and AVIF",
+  title: "Image Converter — JPG, PNG, WebP, GIF, BMP, TIFF, ICO",
   description:
-    "Convert images between JPG, PNG, WebP and AVIF without changing their dimensions. Runs entirely in your browser — no uploads.",
+    "Convert images to JPG, PNG, WebP, GIF, BMP, TIFF or ICO without changing their dimensions. Runs entirely in your browser — no uploads.",
 });
 
 const FAQ_ITEMS = [
@@ -20,7 +20,7 @@ const FAQ_ITEMS = [
   {
     question: "Which format should I pick?",
     answer:
-      "WebP is the safe default for the web: it is smaller than JPG at the same visible quality and is supported everywhere that matters. AVIF is smaller still but encodes slowly and not every browser can create it. PNG is lossless, so use it for screenshots, logos, and anything with sharp edges or transparency. JPG is the right answer when you need maximum compatibility with older software.",
+      "WebP is the safe default for the web: smaller than JPG at the same visible quality, and supported everywhere that matters. PNG is lossless, so use it for screenshots, logos and anything with sharp edges or transparency. JPG is the right answer when you need maximum compatibility with older software. GIF, BMP, TIFF and ICO are here for the specific jobs that still ask for them — GIF for simple flat graphics, BMP and TIFF for older Windows and print software, ICO for favicons and Windows app icons.",
   },
   {
     question: "Why did my file get bigger after converting?",
@@ -30,7 +30,7 @@ const FAQ_ITEMS = [
   {
     question: "What happens to transparency?",
     answer:
-      "PNG, WebP and AVIF all keep the alpha channel. JPG cannot store transparency at all, so when JPG is the target the tool paints a white background behind the image first. Without that step every transparent pixel would encode as black.",
+      "PNG, WebP and ICO keep the alpha channel. JPG, GIF, BMP and TIFF are written without it here, so for those the tool paints a white background behind the image first. Without that step every transparent pixel would encode as black.",
   },
   {
     question: "Is my image uploaded anywhere?",
@@ -45,7 +45,7 @@ export default function ImageConverterPage() {
       category="image"
       slug="converter"
       title="Image Converter"
-      description="Convert between JPG, PNG, WebP and AVIF at the original resolution. Nothing gets uploaded."
+      description="Convert to JPG, PNG, WebP, GIF, BMP, TIFF or ICO at the original resolution. Nothing gets uploaded."
       breadcrumbs={[
         { label: "Home", href: "/" },
         { label: "Image", href: "/image" },
@@ -55,12 +55,12 @@ export default function ImageConverterPage() {
         <>
           <h2>Converting image formats in the browser</h2>
           <p>
-            Every modern browser ships encoders for JPEG, PNG and WebP, and
-            most now ship AVIF as well. This tool decodes your file, draws it
-            onto a canvas at its native resolution, and asks the browser to
-            re-encode that canvas in the format you picked. No external
-            library and no server is involved — the same code path your
-            browser uses to save an image is what produces the output.
+            A browser ships exactly three image encoders: JPEG, PNG and WebP.
+            For those three, this tool decodes your file, draws it onto a canvas
+            at its native resolution, and asks the browser to re-encode it. For
+            GIF, BMP, TIFF and ICO there is no browser encoder to ask, so this
+            tool writes those formats byte by byte itself. Either way, no server
+            is involved and nothing extra is downloaded.
           </p>
           <p>
             Because the work happens locally, there is no upload wait and no
@@ -68,7 +68,7 @@ export default function ImageConverterPage() {
             means your images never touch a third party&apos;s disk, which
             matters for anything you would not post publicly.
           </p>
-          <h2>Choosing between JPG, PNG, WebP and AVIF</h2>
+          <h2>Choosing a format</h2>
           <p>
             <strong>JPG</strong> is lossy and universally supported. It is
             still the right choice for photographs destined for software that
@@ -87,11 +87,20 @@ export default function ImageConverterPage() {
             JPG. It is the pragmatic default for web delivery today.
           </p>
           <p>
-            <strong>AVIF</strong> compresses harder still, especially at low
-            bitrates, and handles wide color gamut and HDR. The tradeoff is
-            encoding speed and support: not every browser can create AVIF, only
-            display it. When yours cannot, the tool refuses rather than
-            silently handing you a PNG with an .avif extension.
+            <strong>GIF, BMP, TIFF and ICO</strong> are here for the software
+            that still expects them. GIF is capped at 256 colours, so it suits
+            flat graphics rather than photographs. BMP and TIFF are written
+            uncompressed and will come out considerably larger than the source.
+            ICO cannot store a side longer than 256px, so larger images are
+            scaled down and the tool says so.
+          </p>
+          <p>
+            <strong>AVIF can be read here but not written.</strong> No browser
+            exposes an AVIF encoder, so no client-side tool can honestly offer it
+            as an output — producing one needs a multi-megabyte encoder download,
+            which would undercut the point of a tool that loads instantly. Drop
+            an AVIF in and convert it to anything else; you just cannot convert
+            to it.
           </p>
           <h2>Quality settings and generation loss</h2>
           <p>

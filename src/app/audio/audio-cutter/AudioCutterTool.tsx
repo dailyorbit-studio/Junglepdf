@@ -110,7 +110,7 @@ export default function AudioCutterTool() {
           accept=".mp3,.wav,.ogg,.m4a,.flac,.aac"
           maxFileSizeMB={200}
           onFiles={handleFiles}
-          label="Drop an audio file here, or click to browse"
+          label="Choose an audio file"
           sublabel="MP3, WAV, OGG, M4A, FLAC — up to 200MB"
         />
       )}
@@ -213,7 +213,7 @@ export default function AudioCutterTool() {
           <button
             onClick={handleCut}
             disabled={processing}
-            className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+            className="btn btn-primary btn-block"
           >
             {processing ? "Trimming…" : "Trim & Download"}
           </button>
@@ -226,13 +226,13 @@ export default function AudioCutterTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download WAV
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Trim another
             </button>

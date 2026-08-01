@@ -139,7 +139,7 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
       {
         name: "Image Converter",
         slug: "converter",
-        description: "Convert between JPG, PNG, WebP, and AVIF without changing dimensions.",
+        description: "Convert to JPG, PNG, WebP, GIF, BMP, TIFF or ICO without changing dimensions.",
         summary:
           "Re-encodes at full resolution, laying down a white matte when the target format has no alpha.",
         keywords: ["png to jpg", "jpg to png", "webp", "avif", "heic", "format", "transcode"],

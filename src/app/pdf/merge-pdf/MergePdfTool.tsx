@@ -147,7 +147,7 @@ export default function MergePdfTool() {
               maxFileSizeMB={100}
               maxFiles={MAX_FILES}
               onFiles={handleFiles}
-              label={files.length === 0 ? "Drop PDF files here, or click to browse" : "Add more PDFs"}
+              label={files.length === 0 ? "Choose PDF files" : "Add more PDFs"}
               sublabel={`Up to 100MB per file · ${MAX_FILES - files.length} slots remaining`}
             />
           )}
@@ -160,7 +160,7 @@ export default function MergePdfTool() {
             <button
               onClick={handleMerge}
               disabled={processing}
-              className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="btn btn-primary btn-block"
             >
               {processing ? "Merging…" : `Merge ${files.length} files`}
             </button>
@@ -178,13 +178,13 @@ export default function MergePdfTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, "merged.pdf")}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download merged PDF
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Merge more
             </button>

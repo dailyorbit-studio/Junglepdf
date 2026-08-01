@@ -9,7 +9,7 @@ export default function OdtToPdfTool() {
       convert={(file, options, onProgress) => odtToPDF(file, options, onProgress)}
       accept=".odt"
       maxFileSizeMB={50}
-      dropLabel="Drop an ODT file here, or click to browse"
+      dropLabel="Choose an ODT file"
       dropSublabel=".odt up to 50MB"
     />
   );

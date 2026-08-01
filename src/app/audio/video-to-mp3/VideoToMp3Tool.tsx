@@ -59,7 +59,7 @@ export default function VideoToMp3Tool() {
           accept=".mp4,.mkv,.avi,.webm,.mov,.wmv,.flv"
           maxFileSizeMB={500}
           onFiles={handleFiles}
-          label="Drop a video file here, or click to browse"
+          label="Choose a video file"
           sublabel="MP4, MKV, AVI, WebM, MOV — up to 500MB"
         />
       )}
@@ -98,7 +98,7 @@ export default function VideoToMp3Tool() {
           <button
             onClick={handleExtract}
             disabled={processing}
-            className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+            className="btn btn-primary btn-block"
           >
             {processing ? "Extracting audio…" : "Extract MP3"}
           </button>
@@ -111,13 +111,13 @@ export default function VideoToMp3Tool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download MP3
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Convert another
             </button>

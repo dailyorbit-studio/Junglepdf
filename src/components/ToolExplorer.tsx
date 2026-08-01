@@ -87,9 +87,12 @@ export default function ToolExplorer() {
                 carries a rotation between 12° and 38°; matching that both kills
                 the resemblance and makes the leaf look grown rather than
                 placed.
+
+                Leaning right, into the heading it sits beside, rather than away
+                from it.
               */}
               <h2 className="flex items-center gap-2 text-lg font-bold text-ink tracking-tight">
-                <Leaf className="w-4 h-4 shrink-0 text-leaf -rotate-[24deg]" />
+                <Leaf className="w-4 h-4 shrink-0 text-leaf rotate-[24deg]" />
                 {category.label} tools
               </h2>
               <a

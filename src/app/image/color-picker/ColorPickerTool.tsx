@@ -127,7 +127,7 @@ export default function ColorPickerTool() {
           accept=".jpg,.jpeg,.png,.webp,.avif,.bmp,.gif"
           maxFileSizeMB={50}
           onFiles={handleFiles}
-          label="Drop an image here, or click to browse"
+          label="Choose an image"
           sublabel="JPEG, PNG, WebP, AVIF, BMP, GIF — up to 50MB"
         />
       )}
@@ -221,7 +221,7 @@ export default function ColorPickerTool() {
 
           <button
             onClick={reset}
-            className="w-full py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+            className="btn btn-secondary btn-block"
           >
             Pick from another image
           </button>

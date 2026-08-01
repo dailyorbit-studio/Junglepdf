@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState, useRef, useMemo } from "react";
+import ErrorMessage from "./ErrorMessage";
 
 interface FileDropZoneProps {
   accept: string;
@@ -18,6 +19,20 @@ const ALLOWED_EXTENSIONS: Record<string, string[]> = {
   video: [".mp4", ".mkv", ".avi", ".webm", ".mov", ".wmv", ".flv"],
   image: [".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif", ".bmp", ".tiff"],
   pdf: [".pdf"],
+};
+
+/**
+ * How a format is spelled to a person, where shouting it is wrong.
+ * "WEBP" and "JPEG" are how the extension looks uppercased; they are not how
+ * anyone writes them.
+ */
+const FORMAT_CASING: Record<string, string> = {
+  webp: "WebP",
+  webm: "WebM",
+  jpeg: "JPEG",
+  jpg: "JPG",
+  tiff: "TIFF",
+  avif: "AVIF",
 };
 
 function getExtension(filename: string): string {
@@ -44,13 +59,23 @@ function getAllAllowedExtensions(accept: string): string[] {
   return [...extensions];
 }
 
+/** ".mp4, .mkv, .avi" → "MP4, MKV, AVI" — capped, because ten of them is a wall. */
+function describeFormats(exts: string[]): string {
+  const names = exts.map((e) => {
+    const bare = e.replace(/^\./, "");
+    return FORMAT_CASING[bare] ?? bare.toUpperCase();
+  });
+  if (names.length <= 5) return names.join(", ");
+  return `${names.slice(0, 5).join(", ")} and ${names.length - 5} more`;
+}
+
 export default function FileDropZone({
   accept,
   multiple = false,
   maxFileSizeMB,
   maxFiles = 20,
   onFiles,
-  label = "Drop your file here, or click to browse",
+  label,
   sublabel,
 }: FileDropZoneProps) {
   const [dragging, setDragging] = useState(false);
@@ -65,36 +90,43 @@ export default function FileDropZone({
 
       const files = Array.from(fileList);
 
-      // Rate limit: max file count
+      // Rate limit: max file count.
+      //
+      // Not "upload" — nothing here is uploaded, and this control is the exact
+      // place someone is deciding whether to trust that claim. Saying the
+      // opposite word in the failure case undoes the promise made everywhere
+      // else on the page.
       if (files.length > maxFiles) {
-        setError(`You can upload at most ${maxFiles} files at a time.`);
+        setError(
+          `That's ${files.length} files — this tool takes up to ${maxFiles} at a time. Try again with fewer.`
+        );
         return;
       }
 
-      // Validate each file
       const maxBytes = maxFileSizeMB * 1024 * 1024;
       const validated: File[] = [];
 
       for (const file of files) {
         const ext = getExtension(file.name);
 
-        // Extension check
         if (allowedExts.length > 0 && !allowedExts.includes(ext)) {
-          const shown = allowedExts.slice(0, 6).join(", ");
-          const more = allowedExts.length > 6 ? ", …" : "";
-          setError(`"${file.name}" isn't a supported file type. Allowed: ${shown}${more}`);
+          const kind = ext ? `a ${ext.replace(/^\./, "").toUpperCase()} file` : "that kind of file";
+          setError(
+            `This tool can't open ${kind}. It works with ${describeFormats(allowedExts)}.`
+          );
           return;
         }
 
-        // Size check
         if (file.size > maxBytes) {
-          setError(`"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)}MB — exceeds the ${maxFileSizeMB}MB limit.`);
+          setError(
+            `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)}MB, and the limit here is ${maxFileSizeMB}MB. ` +
+              `The limit exists because the whole file has to fit in your browser's memory at once.`
+          );
           return;
         }
 
-        // Zero-byte check
         if (file.size === 0) {
-          setError(`"${file.name}" appears to be empty.`);
+          setError(`"${file.name}" is empty — there is nothing in it to work on.`);
           return;
         }
 
@@ -136,17 +168,28 @@ export default function FileDropZone({
       ? `${(maxFileSizeMB / 1024).toFixed(1)}GB`
       : `${maxFileSizeMB}MB`;
 
+  const heading = label ?? (multiple ? "Choose your files" : "Choose your file");
+
+  // Derived rather than required from every caller. A tool that forgets to pass
+  // a sublabel used to render "Max 100MB per file" and leave the reader to
+  // guess which formats were welcome.
+  const formatLine =
+    sublabel ??
+    `${describeFormats(allowedExts)} · up to ${sizeLabel}${
+      multiple ? ` · ${maxFiles} files at once` : ""
+    }`;
+
   return (
     <div className="w-full">
       <div
         role="button"
         tabIndex={0}
         className={`
-          relative w-full rounded-xl border-2 border-dashed cursor-pointer
-          transition-all duration-200 ease-[var(--ease-smooth)]
+          group relative w-full rounded-xl border-2 border-dashed cursor-pointer
+          transition-colors duration-200 ease-[var(--ease-smooth)]
           ${dragging
             ? "border-accent bg-accent-subtle"
-            : "border-border hover:border-ink-muted hover:bg-surface-raised"
+            : "border-border hover:border-accent/60 hover:bg-surface-raised/60"
           }
         `}
         onDragOver={(e) => e.preventDefault()}
@@ -160,21 +203,48 @@ export default function FileDropZone({
             inputRef.current?.click();
           }
         }}
-        aria-label={label}
+        aria-label={`${heading}. ${formatLine}`}
       >
-        <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-6 text-center">
-          {/* Upload icon */}
-          <div className="w-12 h-12 rounded-full bg-surface-raised flex items-center justify-center mb-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink-muted">
+        <div className="flex flex-col items-center justify-center py-10 sm:py-14 px-6 text-center">
+          <div
+            className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-colors duration-200 ${
+              dragging ? "bg-accent text-white" : "bg-accent-subtle text-accent"
+            }`}
+          >
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <polyline points="17,8 12,3 7,8" />
               <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
           </div>
 
-          <p className="text-sm font-medium text-ink mb-1">{label}</p>
-          <p className="text-xs text-ink-muted">
-            {sublabel || `Max ${sizeLabel} per file${multiple ? ` · Up to ${maxFiles} files` : ""}`}
+          <p className="text-base font-semibold text-ink">
+            {dragging ? "Let go to add it" : heading}
+          </p>
+
+          {/*
+            A styled span, not a nested <button>. The whole zone is already the
+            control; a real button inside it would be a second tab stop that
+            does the identical thing, and clicking it would fire both handlers.
+            People still need something that looks pressable — a dashed
+            rectangle does not read as clickable to everyone.
+          */}
+          <span className="mt-3 inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-2 text-sm font-medium text-ink-secondary shadow-[var(--shadow-card)] transition-colors duration-200 group-hover:border-accent group-hover:text-accent">
+            Browse files
+          </span>
+
+          <p className="mt-3 text-xs text-ink-muted">
+            or drag and drop · {formatLine}
           </p>
         </div>
 
@@ -192,11 +262,7 @@ export default function FileDropZone({
         />
       </div>
 
-      {error && (
-        <div role="alert" className="mt-3 px-3.5 py-2.5 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
+      {error && <ErrorMessage className="mt-3">{error}</ErrorMessage>}
     </div>
   );
 }

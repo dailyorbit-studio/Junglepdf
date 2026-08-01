@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { TOOL_CATEGORIES, LEGAL_LINKS, SITE_PAGES, categoryHref, toolHref } from "@/lib/tools";
+import { CONVERSIONS, conversionHref } from "@/lib/conversions";
 import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -38,6 +39,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.9,
       }))
     ),
+    // The conversion hub and its landing pages. Priority sits just under the
+    // tools themselves: these are entry points for very specific queries, and
+    // each one leads to the same tool the category pages already point at.
+    {
+      url: url("/convert/"),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+    ...CONVERSIONS.map((pair) => ({
+      url: url(conversionHref(pair.slug)),
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     ...SITE_PAGES.map((page) => ({
       url: url(page.href),
       lastModified,

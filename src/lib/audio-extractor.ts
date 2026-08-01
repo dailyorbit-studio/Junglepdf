@@ -86,8 +86,8 @@ export async function extractAudioFromVideo(
 
         throw new Error(
           tail
-            ? `FFmpeg couldn't extract the audio from this file. (FFmpeg said: ${tail})`
-            : "FFmpeg couldn't extract the audio from this file. It may be corrupted."
+            ? `The audio couldn't be extracted from this file. (Technical detail: ${tail})`
+            : "The audio couldn't be extracted from this file. It may be damaged."
         );
       }
     } finally {

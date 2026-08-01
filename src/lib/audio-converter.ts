@@ -66,6 +66,31 @@ export const AUDIO_FORMATS: Record<AudioFormat, FormatSpec> = {
 
 export const BITRATES = [96, 128, 192, 256, 320] as const;
 
+/** Extensions that mean "already this format", including the usual aliases. */
+const EXTENSION_TO_FORMAT: Record<string, AudioFormat> = {
+  mp3: "mp3",
+  wav: "wav",
+  wave: "wav",
+  ogg: "ogg",
+  oga: "ogg",
+  m4a: "m4a",
+  mp4a: "m4a",
+  flac: "flac",
+};
+
+/**
+ * Which of our output formats is this file already in?
+ *
+ * The UI rules that option out. Re-encoding an MP3 to an MP3 is not a
+ * conversion — it is a quality change, which is a different job — and offering
+ * it invites someone to run a lossy round-trip for no reason at all.
+ */
+export function detectSourceFormat(file: File): AudioFormat | null {
+  const ext = file.name.match(/\.([^.]+)$/)?.[1]?.toLowerCase();
+  if (!ext) return null;
+  return EXTENSION_TO_FORMAT[ext] ?? null;
+}
+
 export interface AudioConvertResult {
   blob: Blob;
   filename: string;
@@ -98,7 +123,7 @@ export async function convertAudio(
       label: `Encoding ${spec.label}…`,
       band: [30, 90],
       failureMessage:
-        `FFmpeg couldn't convert this file to ${spec.label}. It may be corrupted, or not contain an audio stream.`,
+        `This file couldn't be converted to ${spec.label}. It may be damaged, or it may not have any sound in it.`,
     },
     onProgress
   );

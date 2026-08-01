@@ -147,7 +147,7 @@ export default function ScannerTool() {
             </p>
             <button
               onClick={begin}
-              className="py-2.5 px-5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="py-2.5 px-5 btn btn-primary"
             >
               Start camera
             </button>
@@ -200,7 +200,7 @@ export default function ScannerTool() {
 
           <button
             onClick={capture}
-            className="w-full py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+            className="btn btn-primary btn-block"
           >
             Capture page {pages.length + 1}
           </button>
@@ -261,7 +261,7 @@ export default function ScannerTool() {
               <button
                 onClick={finish}
                 disabled={processing}
-                className="w-full py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white font-medium rounded-lg transition-colors duration-150"
+                className="btn btn-primary btn-block"
               >
                 {processing ? "Building PDF…" : `Create PDF from ${pages.length} page${pages.length === 1 ? "" : "s"}`}
               </button>
@@ -289,13 +289,13 @@ export default function ScannerTool() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 min-w-[10rem] py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 min-w-[10rem] btn btn-primary"
             >
               Download PDF
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Scan again
             </button>

@@ -126,17 +126,11 @@ export default function HomePage() {
                   ))}
                 </ul>
 
-                <p className="mt-5 text-sm text-ink-secondary">
-                  <Link
-                    href="#all-tools"
-                    className="font-medium text-accent hover:text-accent-hover transition-colors duration-150"
-                  >
-                    Browse all {TOOL_COUNT} tools
-                  </Link>{" "}
-                  <span className="text-ink-muted">
-                    — or search from the bar at the top of any page.
-                  </span>
-                </p>
+                {/*
+                  No "Browse all N tools" link here. The full grid is the very
+                  next section on this page, so an anchor down to it is asking
+                  someone to click for something a scroll already gives them.
+                */}
               </div>
             </div>
 

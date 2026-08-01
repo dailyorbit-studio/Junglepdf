@@ -104,7 +104,7 @@ export default function VolumeTool() {
           accept=".mp3,.wav,.ogg,.m4a,.flac,.aac"
           maxFileSizeMB={200}
           onFiles={handleFiles}
-          label="Drop an audio file here, or click to browse"
+          label="Choose an audio file"
           sublabel="MP3, WAV, OGG, M4A, FLAC — up to 200MB"
         />
       )}
@@ -224,14 +224,14 @@ export default function VolumeTool() {
             <button
               onClick={handleApply}
               disabled={processing || (gain === 1 && fadeIn === 0 && fadeOut === 0 && !normalize)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Processing…" : "Apply and download"}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -254,13 +254,13 @@ export default function VolumeTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Adjust another
             </button>

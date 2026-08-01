@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import FileDropZone from "@/components/FileDropZone";
 import ProgressBar from "@/components/ProgressBar";
 import ResultBanner from "@/components/ResultBanner";
@@ -8,6 +8,7 @@ import ErrorMessage from "@/components/ErrorMessage";
 import NoticeMessage from "@/components/NoticeMessage";
 import {
   convertAudio,
+  detectSourceFormat,
   AUDIO_FORMATS,
   BITRATES,
   type AudioFormat,
@@ -23,9 +24,14 @@ function formatBytes(bytes: number): string {
 
 const FORMATS = Object.keys(AUDIO_FORMATS) as AudioFormat[];
 
-export default function AudioConverterTool() {
+/** `initialFormat` pre-selects the output for the /convert/ landing pages. */
+export default function AudioConverterTool({
+  initialFormat,
+}: {
+  initialFormat?: AudioFormat;
+} = {}) {
   const [file, setFile] = useState<File | null>(null);
-  const [format, setFormat] = useState<AudioFormat>("mp3");
+  const [format, setFormat] = useState<AudioFormat>(initialFormat ?? "mp3");
   const [bitrate, setBitrate] = useState<number>(192);
 
   const [progress, setProgress] = useState(0);
@@ -34,10 +40,20 @@ export default function AudioConverterTool() {
   const [result, setResult] = useState<AudioConvertResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const sourceFormat = useMemo(() => (file ? detectSourceFormat(file) : null), [file]);
+
   const handleFiles = useCallback((files: File[]) => {
-    setFile(files[0]);
+    const selected = files[0];
+    setFile(selected);
     setResult(null);
     setError(null);
+
+    // Step off the source format rather than leaving a disabled button
+    // selected and the action reading "Convert to MP3" on an MP3.
+    const source = detectSourceFormat(selected);
+    setFormat((current) =>
+      current === source ? (FORMATS.find((f) => f !== source) ?? current) : current
+    );
   }, []);
 
   const handleConvert = useCallback(async () => {
@@ -77,7 +93,7 @@ export default function AudioConverterTool() {
           accept=".mp3,.wav,.ogg,.m4a,.flac,.aac,.wma"
           maxFileSizeMB={500}
           onFiles={handleFiles}
-          label="Drop an audio file here, or click to browse"
+          label="Choose an audio file"
           sublabel="MP3, WAV, OGG, M4A, FLAC, AAC, WMA — up to 500MB"
         />
       )}
@@ -94,21 +110,33 @@ export default function AudioConverterTool() {
           <div>
             <span className="block text-xs font-medium text-ink-secondary mb-1.5">Convert to</span>
             <div className="flex flex-wrap gap-2">
-              {FORMATS.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setFormat(f)}
-                  className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
-                    format === f
-                      ? "border-accent bg-accent-subtle text-accent"
-                      : "border-border text-ink-muted hover:text-ink"
-                  }`}
-                >
-                  {AUDIO_FORMATS[f].label}
-                </button>
-              ))}
+              {FORMATS.map((f) => {
+                const isSource = f === sourceFormat;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setFormat(f)}
+                    disabled={isSource}
+                    title={isSource ? `This file is already ${AUDIO_FORMATS[f].label}` : undefined}
+                    className={`px-3 py-1.5 text-xs rounded-md border transition-colors ${
+                      isSource
+                        ? "border-border-subtle bg-surface-raised text-ink-muted/55 cursor-not-allowed"
+                        : format === f
+                          ? "border-accent bg-accent-subtle text-accent"
+                          : "border-border text-ink-muted hover:text-ink hover:border-ink-muted"
+                    }`}
+                  >
+                    {AUDIO_FORMATS[f].label}
+                  </button>
+                );
+              })}
             </div>
             <p className="text-xs text-ink-muted mt-2">{spec.note}</p>
+            {sourceFormat && (
+              <p className="text-xs text-ink-muted mt-1">
+                This file is already {AUDIO_FORMATS[sourceFormat].label}, so that option is off.
+              </p>
+            )}
           </div>
 
           {!spec.lossless && (
@@ -155,14 +183,14 @@ export default function AudioConverterTool() {
             <button
               onClick={handleConvert}
               disabled={processing}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing ? "Converting…" : `Convert to ${spec.label}`}
             </button>
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Remove
             </button>
@@ -179,13 +207,13 @@ export default function AudioConverterTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download {result.filename}
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Convert another
             </button>

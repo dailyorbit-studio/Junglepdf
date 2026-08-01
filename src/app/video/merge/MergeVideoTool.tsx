@@ -82,7 +82,7 @@ export default function MergeVideoTool() {
           maxFiles={MERGE_MAX_FILES}
           maxFileSizeMB={500}
           onFiles={handleFiles}
-          label="Drop videos here, or click to browse"
+          label="Choose videos"
           sublabel={`MP4, MKV, AVI, WebM, MOV · up to ${MERGE_MAX_FILES} files`}
         />
       )}
@@ -204,7 +204,7 @@ export default function MergeVideoTool() {
             <button
               onClick={handleMerge}
               disabled={processing || files.length < 2}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               {processing
                 ? "Merging…"
@@ -215,7 +215,7 @@ export default function MergeVideoTool() {
             <button
               onClick={reset}
               disabled={processing}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised disabled:opacity-40 rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Clear
             </button>
@@ -235,13 +235,13 @@ export default function MergeVideoTool() {
           <div className="flex gap-3">
             <button
               onClick={() => downloadBlob(result.blob, result.filename)}
-              className="flex-1 py-3 px-4 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors duration-150"
+              className="flex-1 btn btn-primary"
             >
               Download merged video
             </button>
             <button
               onClick={reset}
-              className="py-3 px-4 border border-border text-ink-secondary hover:bg-surface-raised rounded-lg transition-colors duration-150"
+              className="btn btn-secondary"
             >
               Start over
             </button>

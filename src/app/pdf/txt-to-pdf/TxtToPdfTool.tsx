@@ -19,7 +19,7 @@ export default function TxtToPdfTool() {
       }
       accept=".txt,.text,.log,.md,.csv"
       maxFileSizeMB={25}
-      dropLabel="Drop a text file here, or click to browse"
+      dropLabel="Choose a text file"
       dropSublabel=".txt, .log, .md or .csv up to 25MB"
       extraOptions={{ lineMode }}
       caveatTitle="How your text is laid out"
