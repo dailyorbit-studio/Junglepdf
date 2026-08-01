@@ -74,17 +74,28 @@ export default function AdSlot({ variant, className = "" }: AdSlotProps) {
   // hold a gap for something that will never render.
   if (consent !== "accepted") return null;
 
-  const unit =
-    ADSENSE_CLIENT && config.slot ? (
-      <AdSenseUnit client={ADSENSE_CLIENT} slot={config.slot} height={config.height} />
-    ) : (
-      <PlaceholderUnit
-        label={config.label}
-        size={config.size}
-        height={config.height}
-        reason={ADSENSE_CLIENT ? "no slot ID" : "no publisher ID"}
-      />
-    );
+  const configured = ADSENSE_CLIENT && config.slot;
+
+  // Placeholders are a development affordance, not something to ship.
+  //
+  // In production with no publisher ID they rendered grey boxes reading
+  // "Ad placeholder · no publisher ID" on every page to anyone who accepted the
+  // cookie banner. That reads as an unfinished site to a visitor, and it is
+  // actively bad for the AdSense application itself — the reviewer is looking
+  // at the live site and those boxes say the build is not done. Rendering
+  // nothing until the IDs exist is both tidier and honest: there is no ad.
+  if (!configured && process.env.NODE_ENV === "production") return null;
+
+  const unit = configured ? (
+    <AdSenseUnit client={ADSENSE_CLIENT} slot={config.slot} height={config.height} />
+  ) : (
+    <PlaceholderUnit
+      label={config.label}
+      size={config.size}
+      height={config.height}
+      reason={ADSENSE_CLIENT ? "no slot ID" : "no publisher ID"}
+    />
+  );
 
   if (variant === "anchor") {
     return (
