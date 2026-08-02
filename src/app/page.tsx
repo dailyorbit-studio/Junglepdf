@@ -140,6 +140,17 @@ export default function HomePage() {
               artwork sits in a visible pale rectangle. Multiply drops the
               white and leaves the flat colours untouched.
 
+              Desktop only, from lg up. On a phone the artwork would sit between
+              the headline and the tool links and push the one thing the hero
+              exists to get you to below the fold — so below 1024px it is
+              dropped rather than stacked.
+
+              The `0px` at the end of `sizes` is what makes that a real saving
+              rather than a cosmetic one: it tells the browser to pick a
+              zero-width candidate under 1024px, so a phone never downloads the
+              125KB at all. Removing `hidden` without also changing this would
+              render nothing.
+
               priority: it is the largest thing above the fold, so it is the
               LCP candidate and must not be lazy-loaded. The intrinsic size is
               the file's real 612×408, which reserves the box before the bytes
@@ -152,7 +163,7 @@ export default function HomePage() {
               in a Core Web Vitals report — it is the LCP element.
             */}
             <Image
-              src="/images/Home.png"
+              src="/images/hero.png"
               alt=""
               width={612}
               height={408}

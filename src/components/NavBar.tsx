@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import BrandMark from "./BrandMark";
+import BrandMark, { BrandWordmark } from "./BrandMark";
 import { usePathname } from "next/navigation";
 import ToolSearch from "./ToolSearch";
 import { ToolIcon } from "@/lib/tool-icons";
@@ -14,7 +14,6 @@ import {
   CONVERSIONS,
   type ConversionKind,
 } from "@/lib/conversions";
-import { SITE_NAME } from "@/lib/site";
 
 /**
  * Top navigation.
@@ -102,9 +101,11 @@ export default function NavBar() {
             <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white">
               <BrandMark size={16} />
             </div>
-            <span className="text-base font-bold text-ink tracking-tight group-hover:text-accent transition-colors duration-200">
-              {SITE_NAME}
-            </span>
+            {/*
+              Ink sits on the outer span so hovering carries the whole wordmark
+              to accent; "Jungle" is already accent, so it simply stays put.
+            */}
+            <BrandWordmark className="text-base font-bold tracking-tight text-ink group-hover:text-accent transition-colors duration-200" />
           </Link>
 
           {/*

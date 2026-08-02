@@ -1,5 +1,5 @@
 import Link from "next/link";
-import BrandMark from "./BrandMark";
+import BrandMark, { BrandWordmark } from "./BrandMark";
 import { UndergrowthBand } from "./Foliage";
 import {
   TOOL_CATEGORIES,
@@ -63,9 +63,7 @@ export default function Footer() {
               <span className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white">
                 <BrandMark size={18} />
               </span>
-              <span className="text-base font-bold text-ink group-hover:text-accent transition-colors duration-150">
-                {SITE_NAME}
-              </span>
+              <BrandWordmark className="text-base font-bold text-ink group-hover:text-accent transition-colors duration-150" />
             </Link>
 
             <p className="mt-4 max-w-sm text-sm text-ink-secondary leading-relaxed">
@@ -99,19 +97,21 @@ export default function Footer() {
               ))}
 
               {/*
-                Points at the contact page, not a mailto:. The address in the
-                footer of 122 pages is exactly what address-harvesting crawlers
-                exist to collect — the contact page and the Organization schema
-                already carry it for anyone actually looking.
+                A direct mailto:, matching the studio site. The address is now
+                in the footer of all 122 pages, which is what address-harvesting
+                crawlers collect — a known and accepted trade for one-tap
+                contact. If the spam ever becomes a problem, pointing this at
+                /legal/contact/ instead is the fix; the address lives there and
+                in the Organization schema either way.
               */}
               <li>
-                <Link
-                  href="/legal/contact/"
-                  aria-label="Contact us"
+                <a
+                  href={`mailto:${CREATOR.email}`}
+                  aria-label={`Email ${CREATOR.name}`}
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-muted hover:text-accent hover:bg-surface-raised transition-colors duration-150"
                 >
                   <SocialIcon name="Email" />
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

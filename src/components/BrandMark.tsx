@@ -10,6 +10,30 @@
  * come from the same path data via `scripts/build-brand-assets.mjs`; keep the
  * two in step when changing the shape.
  */
+/**
+ * The wordmark: "Jungle" in the accent green, "PDF" in whatever colour the
+ * caller sets. Same green the hero uses on "running in your browser".
+ *
+ * A component rather than the two spans inlined at each call site, because
+ * there are two call sites — the header and the footer — and a wordmark that
+ * disagrees with itself across a page is worse than one that is plain
+ * everywhere. Callers pass their own size, colour and hover timing; the accent
+ * on "Jungle" is fixed here so it cannot drift.
+ *
+ * Deliberately not sliced out of SITE_NAME. That constant gets interpolated
+ * into page titles and sentences, where a coloured fragment makes no sense —
+ * and deriving one from the other would mean a future rename silently
+ * recolouring half a word. It still reads, copies and is announced as a single
+ * "JunglePDF".
+ */
+export function BrandWordmark({ className = "" }: { className?: string }) {
+  return (
+    <span className={className}>
+      <span className="text-accent">Jungle</span>PDF
+    </span>
+  );
+}
+
 export default function BrandMark({
   size = 20,
   className,
