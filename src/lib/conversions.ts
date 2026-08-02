@@ -454,6 +454,40 @@ export function conversionHref(slug: string): string {
   return `/convert/${slug}/`;
 }
 
+/**
+ * The handful of conversions that earn a permanent footer link on every page.
+ *
+ * These pages had a real discoverability problem: nothing in the static HTML
+ * linked to /convert/ at all. The nav's Convert panel is rendered only while it
+ * is open, so those links do not exist in the document until a human clicks —
+ * and a crawler does not click. All 53 pages were reachable from the sitemap
+ * alone, which gets them indexed but sends them no internal link value and
+ * makes them look orphaned.
+ *
+ * Deliberately a shortlist, not all 53. A footer repeated across 122 pages is
+ * boilerplate, and stuffing every conversion into it dilutes the ones that
+ * matter while making the footer taller than the pages above it — the same
+ * mistake that got 57 tool links removed from here once already.
+ */
+const FOOTER_CONVERSION_SLUGS = [
+  "mp4-to-mp3",
+  "webp-to-png",
+  "png-to-jpg",
+  "jpg-to-png",
+  "mp4-to-gif",
+  "wav-to-mp3",
+  "mov-to-mp4",
+  "png-to-ico",
+] as const;
+
+export const FOOTER_CONVERSIONS: ConversionPair[] = FOOTER_CONVERSION_SLUGS.map((slug) => {
+  const pair = findConversion(slug);
+  // Thrown at module scope so a renamed slug fails the build rather than
+  // quietly dropping a link out of the footer of every page on the site.
+  if (!pair) throw new Error(`FOOTER_CONVERSION_SLUGS references an unknown conversion: ${slug}`);
+  return pair;
+});
+
 /** "WebP to PNG" — used in headings, nav and link text. */
 export function conversionLabel(pair: ConversionPair): string {
   return `${FORMAT_INFO[pair.from].label} to ${FORMAT_INFO[pair.to].label}`;

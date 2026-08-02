@@ -1,19 +1,41 @@
 import Link from "next/link";
 import BrandMark from "./BrandMark";
 import { UndergrowthBand } from "./Foliage";
-import { TOOL_CATEGORIES, SITE_PAGES, categoryHref } from "@/lib/tools";
+import {
+  TOOL_CATEGORIES,
+  SITE_PAGES,
+  ALL_TOOLS,
+  categoryHref,
+  toolHref,
+  popularFirst,
+} from "@/lib/tools";
+import {
+  FOOTER_CONVERSIONS,
+  CONVERSIONS,
+  conversionHref,
+  conversionLabel,
+} from "@/lib/conversions";
 import { SITE_NAME, CREATOR } from "@/lib/site";
 
 /**
  * Site footer.
  *
- * Categories, not tools. Every tool used to be listed here — 57 links in four
- * columns — which made the footer taller than most of the pages it sat under
- * and gave every page the same undifferentiated wall of text. The four category
- * pages are the honest entry points: they already list their own tools, so a
- * crawler still reaches all 57 in one extra hop, and a reader gets a footer
- * they can actually scan.
+ * A middle position between the two extremes this has already been through.
+ * It once listed all 57 tools — taller than most pages it sat under, and the
+ * same undifferentiated wall on every one. It was then cut to four category
+ * links, which read well but left a real gap: measured on the built output,
+ * a tool page exposed six internal links and *nothing on the entire site*
+ * linked to /convert/, because the nav's Convert panel only exists in the DOM
+ * while it is open. Fifty-three conversion pages were sitemap-only orphans.
+ *
+ * So: the few tools per category people actually arrive for, the handful of
+ * most-searched conversions, and a route into each hub. Roughly thirty links
+ * rather than four or a hundred — enough that every section of the site is
+ * reachable from every page, few enough to still scan.
  */
+
+/** Per category. Enough to be useful, not so many the footer becomes the page. */
+const TOOLS_PER_CATEGORY = 5;
 
 /** Pages, not a company blurb: home, the about page, and how to reach us. */
 const SITE_LINKS = [
@@ -36,7 +58,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-14">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-12">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-6 md:pr-8">
+          <div className="col-span-2 md:col-span-4 md:pr-8">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
               <span className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white">
                 <BrandMark size={18} />
@@ -53,16 +75,52 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Categories rather than individual tools, stacked one per row. */}
-          <FooterColumn title="Tools" className="md:col-span-2">
-            {TOOL_CATEGORIES.map((category) => (
-              <FooterLink key={category.slug} href={categoryHref(category.slug)}>
-                {category.label}
+          {/*
+            One column per category, leading with the tools people actually come
+            for. Ordered by popularFirst, the same editorial ranking the homepage
+            grid and the category pages use, so the footer cannot drift out of
+            step with them.
+          */}
+          {TOOL_CATEGORIES.map((category) => {
+            const top = popularFirst(
+              ALL_TOOLS.filter((tool) => tool.category.slug === category.slug)
+            ).slice(0, TOOLS_PER_CATEGORY);
+
+            return (
+              <FooterColumn
+                key={category.slug}
+                title={category.label}
+                className="md:col-span-2"
+              >
+                {top.map((tool) => (
+                  <FooterLink key={tool.href} href={toolHref(category.slug, tool.slug)}>
+                    {tool.name}
+                  </FooterLink>
+                ))}
+                <FooterLink href={categoryHref(category.slug)} muted>
+                  All {category.tools.length} →
+                </FooterLink>
+              </FooterColumn>
+            );
+          })}
+
+          {/* Conversions: the query shapes people actually type. */}
+          <FooterColumn
+            title="Popular conversions"
+            className="col-span-2 md:col-span-6"
+            listClassName="grid grid-cols-2 gap-x-6 sm:grid-cols-3"
+          >
+            {FOOTER_CONVERSIONS.map((pair) => (
+              <FooterLink key={pair.slug} href={conversionHref(pair.slug)}>
+                {conversionLabel(pair)}
               </FooterLink>
             ))}
+            <FooterLink href="/convert/" muted>
+              All {CONVERSIONS.length} →
+            </FooterLink>
           </FooterColumn>
 
-          <FooterColumn title="Links" className="md:col-span-2">
+          <FooterColumn title="Links" className="md:col-span-3">
             {SITE_LINKS.map((link) => (
               <FooterLink key={link.href} href={link.href}>
                 {link.label}
@@ -70,7 +128,7 @@ export default function Footer() {
             ))}
           </FooterColumn>
 
-          <FooterColumn title="Legal" className="md:col-span-2">
+          <FooterColumn title="Legal" className="md:col-span-3">
             {LEGAL_COLUMN.map((link) => (
               <FooterLink key={link.href} href={link.href}>
                 {link.label}
@@ -121,10 +179,18 @@ export default function Footer() {
 function FooterColumn({
   title,
   className,
+  listClassName = "space-y-1",
   children,
 }: {
   title: string;
   className?: string;
+  /**
+   * Applied to the <ul> itself so a wide section can lay its links out in
+   * columns. Wrapping them in a <div> inside the list would be invalid markup —
+   * a <ul> may only contain <li> — and screen readers announce the item count
+   * from the direct children, so the grid has to live on the list.
+   */
+  listClassName?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -132,7 +198,7 @@ function FooterColumn({
       <h2 className="text-xs font-semibold text-ink uppercase tracking-wider">
         {title}
       </h2>
-      <ul className="mt-4 space-y-1">{children}</ul>
+      <ul className={`mt-4 ${listClassName}`}>{children}</ul>
     </nav>
   );
 }
@@ -143,12 +209,23 @@ function FooterColumn({
  * genuinely fiddly on a phone. The padding grows the target without moving the
  * text.
  */
-function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+function FooterLink({
+  href,
+  children,
+  /** For the "All 57 →" tails: a route onward, not another peer link. */
+  muted = false,
+}: {
+  href: string;
+  children: React.ReactNode;
+  muted?: boolean;
+}) {
   return (
     <li>
       <Link
         href={href}
-        className="inline-block py-1.5 text-sm text-ink-secondary hover:text-accent transition-colors duration-150"
+        className={`inline-block py-1.5 text-sm transition-colors duration-150 hover:text-accent ${
+          muted ? "text-ink-muted font-medium" : "text-ink-secondary"
+        }`}
       >
         {children}
       </Link>
