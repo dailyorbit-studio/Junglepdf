@@ -84,8 +84,19 @@ const outputs = [
 ];
 
 for (const [file, svg, size] of outputs) {
-  const buf = await sharp(Buffer.from(svg))
-    .resize(size ?? undefined)
+  // The social card is flattened; the icons keep their alpha.
+  //
+  // card.png is drawn on a full-bleed PAPER rectangle, so every one of its
+  // 756,000 pixels is already opaque — the alpha channel carried no
+  // information, only bytes. Some link-preview renderers composite a
+  // transparent PNG onto black, and a card that has an alpha channel at all is
+  // the one that occasionally comes back as a dark rectangle. Dropping it
+  // removes that failure mode entirely. The icons genuinely need transparency,
+  // so only the 1200x630 card is flattened.
+  const isSocialCard = file.endsWith("card.png");
+
+  const pipeline = sharp(Buffer.from(svg)).resize(size ?? undefined);
+  const buf = await (isSocialCard ? pipeline.flatten({ background: PAPER }) : pipeline)
     .png({ compressionLevel: 9 })
     .toBuffer();
   writeFileSync(root + file, buf);
