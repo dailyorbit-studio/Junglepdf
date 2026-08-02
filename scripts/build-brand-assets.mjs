@@ -77,7 +77,7 @@ const ogCard = `
 // signature. It is the same mark the header draws (BrandMark on a bg-accent
 // tile) and the same one the favicon uses, so all three stay one picture.
 const outputs = [
-  ["public/og-image.png", ogCard, null],
+  ["public/card.png", ogCard, null],
   ["public/images/logo.png", mark(512), 512],
   ["src/app/apple-icon.png", mark(180), 180],
   ["src/app/icon.png", mark(512), 512],

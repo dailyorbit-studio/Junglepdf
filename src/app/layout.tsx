@@ -5,7 +5,7 @@ import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import ConsentBanner from "@/components/ConsentBanner";
 import ThirdPartyScripts from "@/components/ThirdPartyScripts";
-import { SITE_URL, SITE_NAME, CREATOR } from "@/lib/site";
+import { SITE_URL, SITE_NAME, CREATOR, SOCIAL_LINKS } from "@/lib/site";
 
 // Self-hosted at build time by next/font — no render-blocking round trip to
 // fonts.googleapis.com, and no FOUT from a stylesheet <link>.
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
       "Merge, split, compress and convert PDF, image, audio and video files — free, in your browser, with nothing uploaded.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/card.png",
         width: 1200,
         height: 630,
         alt: `${SITE_NAME} — free file tools that run in your browser`,
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     title: `${SITE_NAME} — Free Online PDF, Image, Audio & Video Tools`,
     description:
       "Merge, split, compress and convert PDF, image, audio and video files — free, in your browser, with nothing uploaded.",
-    images: ["/og-image.png"],
+    images: ["/card.png"],
   },
   robots: {
     index: true,
@@ -137,7 +137,14 @@ export default function RootLayout({
                     name: CREATOR.name,
                     url: `https://${CREATOR.domain}`,
                   },
-                  sameAs: [`https://${CREATOR.domain}`],
+                  // sameAs is how a search engine ties this site to the
+                  // accounts that operate it. The studio site plus its public
+                  // profiles — the same set the footer links to, read from one
+                  // constant so the two cannot drift apart.
+                  sameAs: [
+                    `https://${CREATOR.domain}`,
+                    ...SOCIAL_LINKS.map((social) => social.href),
+                  ],
                 },
                 {
                   "@type": "WebSite",

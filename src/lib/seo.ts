@@ -25,7 +25,7 @@ import { findTool } from "./tools";
  */
 
 const OG_IMAGE = {
-  url: "/og-image.png",
+  url: "/card.png",
   width: 1200,
   height: 630,
   alt: `${SITE_NAME} — free file tools that run in your browser`,

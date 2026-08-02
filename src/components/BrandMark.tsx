@@ -6,7 +6,7 @@
  * copy of a generic file glyph, which is how the tab icon and the wordmark
  * ended up being two different pictures.
  *
- * The raster versions (favicon.ico, icon.png, apple-icon.png, og-image.png)
+ * The raster versions (favicon.ico, icon.png, apple-icon.png, card.png)
  * come from the same path data via `scripts/build-brand-assets.mjs`; keep the
  * two in step when changing the shape.
  */
