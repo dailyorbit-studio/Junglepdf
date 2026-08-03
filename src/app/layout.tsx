@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   // Search Console / Bing verification tokens go here once the property is
   // claimed; an empty string would emit an empty meta tag, so leave them out
   // until you have the real values.
-  // verification: { google: "…", other: { "msvalidate.01": "…" } },
+  verification: { google: "38bN_2uc3C49sE0SB4GEXeRlRH6c6j2g5gb9XwKFtbc" },
   formatDetection: { telephone: false, address: false, email: false },
   openGraph: {
     type: "website",
