@@ -46,6 +46,30 @@
   --color-video: #C2410C;      /* tiger */
   --color-video-subtle: #FFF4ED;
 
+  /* Non-file tool categories — developer, text, calculators, CSS, SEO.
+     Same rule as the media hues: each `text-*` value clears WCAG AA (4.5:1)
+     on white so it is safe at body size, not just for large icons. */
+  --color-dev: #4338CA;        /* indigo — developer toolkit */
+  --color-dev-subtle: #EEF2FF;
+  --color-txt: #0F766E;        /* teal — text toolkit */
+  --color-txt-subtle: #F0FDFA;
+  --color-calc: #1D4ED8;       /* blue — calculators */
+  --color-calc-subtle: #EFF6FF;
+  --color-css: #A21CAF;        /* fuchsia — CSS/UI generators */
+  --color-css-subtle: #FDF4FF;
+  --color-seo: #A16207;        /* gold — SEO toolkit */
+  --color-seo-subtle: #FEFCE8;
+  --color-qr: #334155;         /* slate — QR & barcode toolkit */
+  --color-qr-subtle: #F1F5F9;
+  --color-unit: #4D7C0F;       /* olive — unit converters */
+  --color-unit-subtle: #F7FEE7;
+  --color-clr: #0891B2;        /* cyan — colour tools */
+  --color-clr-subtle: #ECFEFF;
+  --color-prompt: #7C3AED;     /* violet — AI prompt toolkit */
+  --color-prompt-subtle: #F5F3FF;
+  --color-resume: #BE185D;     /* rose — resume toolkit */
+  --color-resume-subtle: #FDF2F8;
+
   /* Brand — the leaf in the mark. Same value as --color-success today, but a
      separate token: the logo should not change colour if the success green is
      ever retuned for contrast. */

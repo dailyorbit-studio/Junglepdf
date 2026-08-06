@@ -571,6 +571,588 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
       },
     ],
   },
+  {
+    label: "Developer",
+    slug: "dev",
+    description:
+      "Decode, format, and generate the things developers reach for a dozen times a day. Every tool runs on your device — paste a token or a query and nothing is sent anywhere.",
+    colorClass: "text-dev",
+    subtleClass: "bg-dev-subtle",
+    tools: [
+      {
+        name: "JWT Decoder",
+        slug: "jwt-decoder",
+        description: "Decode a JSON Web Token to read its header and payload, and check when it expires.",
+        summary:
+          "Splits and base64url-decodes the token in your browser — the secret is never needed and nothing is transmitted.",
+        keywords: ["jwt", "json web token", "decode token", "bearer", "auth", "claims", "payload"],
+        isNew: true,
+      },
+      {
+        name: "UUID Generator",
+        slug: "uuid-generator",
+        description: "Generate random v4 UUIDs one at a time or in bulk, ready to copy.",
+        summary:
+          "Uses the browser's crypto.randomUUID for real cryptographic randomness — generate up to hundreds at once.",
+        keywords: ["uuid", "guid", "unique id", "v4", "random id", "identifier"],
+        isNew: true,
+      },
+      {
+        name: "JSON Formatter",
+        slug: "json-formatter",
+        description: "Pretty-print messy JSON with proper indentation, or minify it back to one line.",
+        summary:
+          "Parses and re-serializes with your chosen indent, reporting the exact position of any syntax error.",
+        keywords: ["json", "pretty print", "beautify", "format json", "minify", "indent"],
+        isNew: true,
+      },
+      {
+        name: "JSON Validator",
+        slug: "json-validator",
+        description: "Check whether a block of JSON is valid and get the line and column of the first error.",
+        summary:
+          "Runs a strict parse and points at the exact character where the document breaks, with a plain-English reason.",
+        keywords: ["json", "validate json", "json lint", "syntax check", "is valid json"],
+        isNew: true,
+      },
+      {
+        name: "SQL Formatter",
+        slug: "sql-formatter",
+        description: "Format a cramped SQL query into readable, indented lines with keywords aligned.",
+        summary:
+          "Re-lays clauses onto their own lines and normalises keyword case, entirely in the browser.",
+        keywords: ["sql", "format sql", "beautify sql", "query formatter", "pretty sql", "indent"],
+        isNew: true,
+      },
+      {
+        name: "HTML Formatter",
+        slug: "html-formatter",
+        description: "Indent and tidy raw HTML so nested tags are readable, or collapse it back down.",
+        summary:
+          "Re-indents the markup by tag depth and can minify it again — your HTML never leaves the page.",
+        keywords: ["html", "format html", "beautify html", "pretty print", "indent html", "minify"],
+        isNew: true,
+      },
+      {
+        name: "CSS Beautifier",
+        slug: "css-beautifier",
+        description: "Format minified or messy CSS into clean, indented rules — or minify it for shipping.",
+        summary:
+          "Splits rules and declarations onto their own lines with consistent spacing, and can compress them back.",
+        keywords: ["css", "beautify css", "format css", "pretty css", "minify css", "unminify"],
+        isNew: true,
+      },
+      {
+        name: "Base64 Encode/Decode",
+        slug: "base64",
+        description: "Convert text to Base64 and back, with full Unicode handled correctly.",
+        summary:
+          "Encodes and decodes through a UTF-8-safe path so emoji and accents survive the round trip.",
+        keywords: ["base64", "encode", "decode", "b64", "atob", "btoa", "data uri"],
+        isNew: true,
+      },
+      {
+        name: "URL Encode/Decode",
+        slug: "url-encoder",
+        description: "Percent-encode text for safe use in URLs, or decode an encoded string back to plain text.",
+        summary:
+          "Runs encodeURIComponent and decodeURIComponent in the browser, with a component and full-URL mode.",
+        keywords: ["url encode", "url decode", "percent encode", "uri", "escape", "querystring"],
+        isNew: true,
+      },
+      {
+        name: "Regex Tester",
+        slug: "regex-tester",
+        description: "Test a regular expression against your text and see every match highlighted live.",
+        summary:
+          "Runs the pattern with the flags you set and lists each match and capture group as you type.",
+        keywords: ["regex", "regular expression", "regexp", "test regex", "match", "pattern", "capture group"],
+        isNew: true,
+      },
+      {
+        name: "Hash Generator",
+        slug: "hash-generator",
+        description: "Generate SHA-1, SHA-256, SHA-384 and SHA-512 hashes of any text.",
+        summary:
+          "Uses the browser's Web Crypto SubtleCrypto for real hashing — the input never leaves your device.",
+        keywords: ["hash", "sha256", "sha-256", "sha1", "sha512", "checksum", "digest"],
+        isNew: true,
+      },
+      {
+        name: "Timestamp Converter",
+        slug: "timestamp-converter",
+        description: "Convert a Unix timestamp to a human date and back, in your local time and UTC.",
+        summary:
+          "Reads seconds or milliseconds and shows the date in UTC and your local zone, updating as you type.",
+        keywords: ["unix timestamp", "epoch", "unix time", "date to timestamp", "utc", "milliseconds"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "Text",
+    slug: "text",
+    description:
+      "Clean up, transform, and count text without leaving the page. Sort lines, strip duplicates, change case, generate slugs — every tool runs on your device as you type.",
+    colorClass: "text-txt",
+    subtleClass: "bg-txt-subtle",
+    tools: [
+      {
+        name: "Remove Duplicate Lines",
+        slug: "remove-duplicate-lines",
+        description: "Remove repeated lines from a list, keeping the first of each.",
+        summary:
+          "Deduplicates line by line, with optional case-insensitive and trimmed matching.",
+        keywords: ["dedupe", "duplicate lines", "unique lines", "remove repeats", "distinct"],
+        isNew: true,
+      },
+      {
+        name: "Remove Blank Lines",
+        slug: "remove-blank-lines",
+        description: "Strip empty and whitespace-only lines from a block of text.",
+        summary:
+          "Drops blank lines and can trim trailing spaces on the ones that remain.",
+        keywords: ["empty lines", "blank lines", "remove whitespace", "compact", "clean text"],
+        isNew: true,
+      },
+      {
+        name: "Alphabetical Sort",
+        slug: "sort-text",
+        description: "Sort lines alphabetically, A→Z or Z→A, with numeric and case options.",
+        summary:
+          "Orders lines with optional case-insensitive, numeric, and de-duplicate handling.",
+        keywords: ["alphabetical sort", "sort lines", "order list", "a-z", "sort text"],
+        isNew: true,
+      },
+      {
+        name: "Reverse Text",
+        slug: "reverse-text",
+        description: "Reverse text by characters, or flip the order of the words or lines.",
+        summary:
+          "Reverses characters by default, with separate word-order and line-order modes.",
+        keywords: ["reverse", "backwards", "flip text", "mirror", "reverse words"],
+        isNew: true,
+      },
+      {
+        name: "Random Text Generator",
+        slug: "random-text",
+        description: "Generate lorem ipsum or random placeholder text by words, sentences or paragraphs.",
+        summary:
+          "Builds filler text to the length you choose — handy for mockups and layout tests.",
+        keywords: ["lorem ipsum", "placeholder text", "dummy text", "filler", "random words"],
+        isNew: true,
+      },
+      {
+        name: "Word Counter",
+        slug: "word-counter",
+        description: "Count words, characters, sentences and paragraphs as you type.",
+        summary:
+          "Live counts of words, characters, sentences, paragraphs, plus an estimated reading time.",
+        keywords: ["word count", "count words", "essay length", "reading time", "wordcount"],
+        isNew: true,
+      },
+      {
+        name: "Character Counter",
+        slug: "character-counter",
+        description: "Count characters with and without spaces, live as you type.",
+        summary:
+          "Character, word and line tallies with running counts against common length limits.",
+        keywords: ["character count", "letter count", "sms length", "twitter limit", "char counter"],
+        isNew: true,
+      },
+      {
+        name: "Case Converter",
+        slug: "case-converter",
+        description: "Convert text between UPPERCASE, lowercase, Title Case, camelCase and more.",
+        summary:
+          "One click switches between upper, lower, title, sentence, camel, snake and kebab case.",
+        keywords: ["uppercase", "lowercase", "title case", "camelcase", "snake case", "capitalize"],
+        isNew: true,
+      },
+      {
+        name: "Slug Generator",
+        slug: "slug-generator",
+        description: "Turn any title into a clean, URL-safe slug.",
+        summary:
+          "Lowercases, strips accents and punctuation, and joins the words with hyphens.",
+        keywords: ["slug", "url slug", "permalink", "seo url", "kebab case"],
+        isNew: true,
+      },
+      {
+        name: "HTML Entity Encoder",
+        slug: "html-entities",
+        description: "Encode text to HTML entities to display it safely, or decode entities back.",
+        summary:
+          "Escapes the reserved HTML characters to entities and decodes them again, in the browser.",
+        keywords: ["html entities", "escape html", "encode entities", "special characters", "ampersand"],
+        isNew: true,
+      },
+      {
+        name: "Morse Code Converter",
+        slug: "morse-code",
+        description: "Translate text to Morse code and Morse code back to text.",
+        summary:
+          "Encodes letters, numbers and punctuation to Morse, and decodes dots and dashes back.",
+        keywords: ["morse code", "translate morse", "dot dash", "sos", "morse translator"],
+        isNew: true,
+      },
+      {
+        name: "Binary ↔ Text",
+        slug: "binary-text",
+        description: "Convert text to binary and binary back to readable text.",
+        summary:
+          "Encodes each character to 8-bit binary and decodes it back, UTF-8 aware throughout.",
+        keywords: ["binary", "text to binary", "binary to text", "binary translator", "ascii binary"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "Calculators",
+    slug: "calc",
+    description:
+      "Work out loans, investments, tax and dates in seconds. Every calculator runs on your device — enter your numbers and nothing is sent anywhere.",
+    colorClass: "text-calc",
+    subtleClass: "bg-calc-subtle",
+    tools: [
+      {
+        name: "EMI Calculator",
+        slug: "emi-calculator",
+        description: "Work out the monthly EMI on a loan from the amount, interest rate and tenure.",
+        summary:
+          "Computes the equated monthly instalment plus total interest and total payable, with a full breakdown.",
+        keywords: ["emi", "loan emi", "monthly instalment", "home loan", "car loan", "interest"],
+        isNew: true,
+      },
+      {
+        name: "SIP Calculator",
+        slug: "sip-calculator",
+        description: "Estimate the future value of a monthly SIP from the amount, return and duration.",
+        summary:
+          "Projects the maturity value of a systematic investment plan and shows how much is growth.",
+        keywords: ["sip", "mutual fund", "systematic investment", "returns", "wealth", "compounding"],
+        isNew: true,
+      },
+      {
+        name: "FD Calculator",
+        slug: "fd-calculator",
+        description: "Calculate the maturity amount and interest on a fixed deposit.",
+        summary:
+          "Applies compound interest at your chosen frequency to show the maturity value and interest earned.",
+        keywords: ["fixed deposit", "fd", "maturity", "compound interest", "bank deposit", "returns"],
+        isNew: true,
+      },
+      {
+        name: "GST Calculator",
+        slug: "gst-calculator",
+        description: "Add or remove GST at any rate, with the tax split into CGST and SGST.",
+        summary:
+          "Works out the tax and net or gross amount either way, splitting GST into CGST and SGST halves.",
+        keywords: ["gst", "tax", "cgst", "sgst", "add gst", "remove gst", "inclusive", "exclusive"],
+        isNew: true,
+      },
+      {
+        name: "Loan Calculator",
+        slug: "loan-calculator",
+        description: "See the monthly payment, total interest and total cost of any loan.",
+        summary:
+          "Amortises a loan from principal, rate and term to show the payment and the lifetime interest.",
+        keywords: ["loan", "repayment", "interest", "personal loan", "mortgage", "amortization"],
+        isNew: true,
+      },
+      {
+        name: "Salary Calculator",
+        slug: "salary-calculator",
+        description: "Break a yearly salary down to monthly, weekly, daily and hourly pay.",
+        summary:
+          "Converts an annual figure across pay periods using your working hours, before deductions.",
+        keywords: ["salary", "hourly rate", "annual to hourly", "pay", "wage", "take home"],
+        isNew: true,
+      },
+      {
+        name: "Percentage Calculator",
+        slug: "percentage-calculator",
+        description: "Solve the common percentage questions — of, change, and what-percent.",
+        summary:
+          "Three calculators in one: X% of Y, X is what percent of Y, and the percentage increase or decrease.",
+        keywords: ["percentage", "percent of", "percent change", "increase", "decrease", "ratio"],
+        isNew: true,
+      },
+      {
+        name: "Age Calculator",
+        slug: "age-calculator",
+        description: "Work out an exact age in years, months and days from a date of birth.",
+        summary:
+          "Counts the precise years, months and days to today or any date, plus the total days lived.",
+        keywords: ["age", "date of birth", "how old", "birthday", "years months days"],
+        isNew: true,
+      },
+      {
+        name: "Date Difference",
+        slug: "date-difference",
+        description: "Count the days, weeks and months between two dates.",
+        summary:
+          "Gives the exact gap between two dates in days, and in years, months and days combined.",
+        keywords: ["date difference", "days between", "duration", "how many days", "date calculator"],
+        isNew: true,
+      },
+      {
+        name: "Time Duration",
+        slug: "time-duration",
+        description: "Calculate the duration between a start and end time.",
+        summary:
+          "Works out hours and minutes between two times, handling spans that cross midnight.",
+        keywords: ["time duration", "hours between", "time difference", "elapsed", "shift length"],
+        isNew: true,
+      },
+      {
+        name: "Discount Calculator",
+        slug: "discount-calculator",
+        description: "Find the sale price and the amount saved from a price and a discount.",
+        summary:
+          "Applies a percentage off to show the final price and the money saved, instantly.",
+        keywords: ["discount", "sale price", "percent off", "savings", "markdown", "deal"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "CSS",
+    slug: "css",
+    description:
+      "Design CSS visually and copy the code. Tune the sliders, watch the live preview, and paste the result — every generator runs in your browser.",
+    colorClass: "text-css",
+    subtleClass: "bg-css-subtle",
+    tools: [
+      {
+        name: "Glassmorphism Generator",
+        slug: "glassmorphism",
+        description: "Design a frosted-glass card and copy the CSS, backdrop-blur and all.",
+        summary:
+          "Tune blur, transparency and tint with a live preview, then copy the backdrop-filter CSS.",
+        keywords: ["glassmorphism", "frosted glass", "backdrop filter", "blur", "glass card", "css"],
+        isNew: true,
+      },
+      {
+        name: "Neumorphism Generator",
+        slug: "neumorphism",
+        description: "Create soft, extruded neumorphic shadows and copy the CSS.",
+        summary:
+          "Adjust distance, blur and intensity to build the paired light and dark shadows, with a live preview.",
+        keywords: ["neumorphism", "soft ui", "box shadow", "extruded", "css", "neomorphism"],
+        isNew: true,
+      },
+      {
+        name: "Border Radius Generator",
+        slug: "border-radius",
+        description: "Round corners individually and copy the border-radius CSS.",
+        summary:
+          "Drag each corner independently to shape a box, with the border-radius value updating live.",
+        keywords: ["border radius", "rounded corners", "css", "blob", "corner radius"],
+        isNew: true,
+      },
+      {
+        name: "Box Shadow Generator",
+        slug: "box-shadow",
+        description: "Build a box-shadow with offset, blur, spread and colour, and copy the CSS.",
+        summary:
+          "Control every shadow parameter, inset included, and copy the box-shadow with a live preview.",
+        keywords: ["box shadow", "css shadow", "drop shadow", "inset", "elevation"],
+        isNew: true,
+      },
+      {
+        name: "Gradient Generator",
+        slug: "gradient",
+        description: "Design a linear or radial CSS gradient and copy the background.",
+        summary:
+          "Pick colours and an angle, switch between linear and radial, and copy the gradient CSS.",
+        keywords: ["gradient", "linear gradient", "radial gradient", "css background", "colours"],
+        isNew: true,
+      },
+      {
+        name: "Clip Path Generator",
+        slug: "clip-path",
+        description: "Choose a shape and copy the CSS clip-path that cuts a box to it.",
+        summary:
+          "Preset polygons — triangles, hexagons, arrows and more — previewed live with the clip-path CSS.",
+        keywords: ["clip path", "css shapes", "polygon", "mask", "clip", "cut out"],
+        isNew: true,
+      },
+      {
+        name: "CSS Grid Generator",
+        slug: "grid",
+        description: "Set up columns, rows and gaps visually and copy the grid CSS.",
+        summary:
+          "Adjust the column and row counts and the gap, preview the tracks, and copy the grid CSS.",
+        keywords: ["css grid", "grid template", "columns", "layout", "grid generator"],
+        isNew: true,
+      },
+      {
+        name: "Flexbox Generator",
+        slug: "flexbox",
+        description: "Experiment with flex alignment and copy the flexbox CSS.",
+        summary:
+          "Change direction, justify, align, wrap and gap on a live row of items, and copy the flex CSS.",
+        keywords: ["flexbox", "flex", "justify content", "align items", "css layout", "flex generator"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "SEO",
+    slug: "seo",
+    description:
+      "Generate the tags and files search engines look for — meta tags, Open Graph, robots.txt, sitemaps and structured data. Fill the form, copy the code, all in your browser.",
+    colorClass: "text-seo",
+    subtleClass: "bg-seo-subtle",
+    tools: [
+      {
+        name: "Meta Tag Generator",
+        slug: "meta-tags",
+        description: "Generate the title, description and meta tags a page needs, ready to paste.",
+        summary:
+          "Builds the title, description, robots, viewport and charset tags from a short form.",
+        keywords: ["meta tags", "meta description", "title tag", "seo tags", "head tags", "generator"],
+        isNew: true,
+      },
+      {
+        name: "Robots.txt Generator",
+        slug: "robots-txt",
+        description: "Build a robots.txt file with allow, disallow and sitemap directives.",
+        summary:
+          "Writes a valid robots.txt from your allow and disallow paths and sitemap URL.",
+        keywords: ["robots.txt", "crawl", "disallow", "user-agent", "block crawler", "generator"],
+        isNew: true,
+      },
+      {
+        name: "Sitemap Generator",
+        slug: "sitemap",
+        description: "Turn a list of URLs into a valid XML sitemap for search engines.",
+        summary:
+          "Wraps your URLs in sitemap XML with changefreq and priority, ready to upload.",
+        keywords: ["sitemap", "xml sitemap", "sitemap.xml", "urls", "search console", "generator"],
+        isNew: true,
+      },
+      {
+        name: "Open Graph Generator",
+        slug: "open-graph",
+        description: "Generate Open Graph meta tags for rich link previews on social media.",
+        summary:
+          "Builds the og:title, og:description, og:image, og:url and og:type tags from a form.",
+        keywords: ["open graph", "og tags", "facebook preview", "social meta", "link preview", "og:image"],
+        isNew: true,
+      },
+      {
+        name: "Twitter Card Generator",
+        slug: "twitter-card",
+        description: "Generate Twitter Card meta tags for rich previews on X / Twitter.",
+        summary:
+          "Writes the twitter:card, title, description, image and site tags for summary or large-image cards.",
+        keywords: ["twitter card", "x card", "twitter meta", "summary large image", "social preview"],
+        isNew: true,
+      },
+      {
+        name: "Canonical URL Generator",
+        slug: "canonical",
+        description: "Generate a canonical link tag to point search engines at the preferred URL.",
+        summary:
+          "Cleans a URL of tracking parameters and wraps it in a rel=canonical link tag.",
+        keywords: ["canonical", "rel canonical", "duplicate content", "canonical url", "link tag"],
+        isNew: true,
+      },
+      {
+        name: "Schema Markup Generator",
+        slug: "schema",
+        description: "Generate JSON-LD structured data for organisations, articles, FAQs and more.",
+        summary:
+          "Produces valid schema.org JSON-LD for several common types from a short form.",
+        keywords: ["schema", "json-ld", "structured data", "rich results", "schema.org", "microdata"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "QR Codes",
+    slug: "qr",
+    description:
+      "Create QR codes and barcodes for links, WiFi, contacts, payments and more — or scan one with your camera. Everything is generated on your device; nothing is uploaded.",
+    colorClass: "text-qr",
+    subtleClass: "bg-qr-subtle",
+    tools: [
+      {
+        name: "QR Code Generator",
+        slug: "qr-generator",
+        description: "Turn any text or link into a QR code and download it as a PNG.",
+        summary:
+          "Encodes any text or URL into a scannable QR code you can size and download, all in the browser.",
+        keywords: ["qr code", "qr generator", "url to qr", "text to qr", "make qr code"],
+        isNew: true,
+      },
+      {
+        name: "WiFi QR Code",
+        slug: "wifi-qr",
+        description: "Make a QR code that connects a phone to your WiFi with one scan.",
+        summary:
+          "Builds a WIFI: QR from your network name, password and security type — no more reading out passwords.",
+        keywords: ["wifi qr", "wifi password qr", "network qr", "guest wifi", "connect wifi"],
+        isNew: true,
+      },
+      {
+        name: "WhatsApp QR Code",
+        slug: "whatsapp-qr",
+        description: "Create a QR code that opens a WhatsApp chat with a prefilled message.",
+        summary:
+          "Encodes a wa.me link with your number and an optional message, so a scan opens the chat.",
+        keywords: ["whatsapp qr", "wa.me", "click to chat", "whatsapp link", "business qr"],
+        isNew: true,
+      },
+      {
+        name: "vCard QR Code",
+        slug: "vcard-qr",
+        description: "Put your contact details into a QR code that saves straight to a phone.",
+        summary:
+          "Builds a vCard QR from name, phone, email and more, so a scan adds you as a contact.",
+        keywords: ["vcard qr", "contact qr", "business card qr", "digital business card", "mecard"],
+        isNew: true,
+      },
+      {
+        name: "Email QR Code",
+        slug: "email-qr",
+        description: "Make a QR code that opens a new email with the address, subject and body filled in.",
+        summary:
+          "Encodes a mailto link so a scan opens a prefilled email to your address.",
+        keywords: ["email qr", "mailto qr", "contact qr", "email link", "qr to email"],
+        isNew: true,
+      },
+      {
+        name: "Payment QR Code",
+        slug: "payment-qr",
+        description: "Generate a UPI payment QR code with your ID, name and an optional amount.",
+        summary:
+          "Builds a upi:// QR that any UPI app can scan to pay you, with amount and note optional.",
+        keywords: ["upi qr", "payment qr", "upi id qr", "collect payment", "scan to pay", "gpay phonepe"],
+        isNew: true,
+      },
+      {
+        name: "Scan QR Code",
+        slug: "scan-qr",
+        description: "Scan a QR code with your camera and read what it contains — no app needed.",
+        summary:
+          "Reads a QR code from your camera or an image entirely on-device; nothing is uploaded.",
+        keywords: ["scan qr", "qr scanner", "qr reader", "read qr code", "camera scanner"],
+        isNew: true,
+      },
+      {
+        name: "Barcode Generator",
+        slug: "barcode",
+        description: "Generate a barcode in CODE128, EAN, UPC and other formats, ready to download.",
+        summary:
+          "Renders a barcode in the format you pick and lets you download it as a PNG, in the browser.",
+        keywords: ["barcode", "code128", "ean13", "upc", "barcode generator", "product code"],
+        isNew: true,
+      },
+    ],
+  },
 ];
 
 // Trailing slashes for the same reason as toolHref — `trailingSlash: true`
