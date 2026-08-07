@@ -26,11 +26,11 @@ export default function HashGeneratorTool() {
 
   useEffect(() => {
     let cancelled = false;
-    if (!text) {
-      setHashes({ "SHA-1": "", "SHA-256": "", "SHA-384": "", "SHA-512": "" });
-      return;
-    }
     (async () => {
+      if (!text) {
+        if (!cancelled) setHashes({ "SHA-1": "", "SHA-256": "", "SHA-384": "", "SHA-512": "" });
+        return;
+      }
       const entries = await Promise.all(ALGOS.map(async (a) => [a, await digestHex(a, text)] as const));
       if (!cancelled) setHashes(Object.fromEntries(entries) as Record<Algo, string>);
     })();

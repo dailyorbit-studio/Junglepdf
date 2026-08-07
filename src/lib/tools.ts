@@ -1153,6 +1153,247 @@ export const TOOL_CATEGORIES: ToolCategory[] = [
       },
     ],
   },
+  {
+    label: "AI Prompts",
+    slug: "prompt",
+    description:
+      "Build better prompts for ChatGPT, Midjourney and more from a simple form. No AI runs here — these are prompt templates you copy and paste into the tool of your choice.",
+    colorClass: "text-prompt",
+    subtleClass: "bg-prompt-subtle",
+    tools: [
+      {
+        name: "ChatGPT Prompt Generator",
+        slug: "chatgpt-prompt",
+        description: "Turn a rough idea into a structured ChatGPT prompt with role, task and format.",
+        summary:
+          "Composes a clear prompt from role, task, context, tone and output format — ready to paste.",
+        keywords: ["chatgpt prompt", "prompt generator", "ai prompt", "gpt prompt", "prompt template"],
+        isNew: true,
+      },
+      {
+        name: "Midjourney Prompt Builder",
+        slug: "midjourney-prompt",
+        description: "Build a detailed Midjourney image prompt with style, lighting and parameters.",
+        summary:
+          "Assembles subject, style, lighting and camera details plus --ar and --v flags into one prompt.",
+        keywords: ["midjourney prompt", "image prompt", "ai art prompt", "midjourney", "prompt builder"],
+        isNew: true,
+      },
+      {
+        name: "Resume Prompt Generator",
+        slug: "resume-prompt",
+        description: "Generate a prompt that gets an AI to write or sharpen your resume bullet points.",
+        summary:
+          "Builds a prompt from your role, experience and achievements to draft strong resume lines.",
+        keywords: ["resume prompt", "cv prompt", "resume ai", "bullet points", "job application"],
+        isNew: true,
+      },
+      {
+        name: "Email Prompt Generator",
+        slug: "email-prompt",
+        description: "Create a prompt that gets an AI to draft the email you need, in the right tone.",
+        summary:
+          "Turns purpose, recipient, tone and key points into a prompt for a ready-to-send email draft.",
+        keywords: ["email prompt", "email ai", "draft email", "write email", "prompt template"],
+        isNew: true,
+      },
+      {
+        name: "Coding Prompt Generator",
+        slug: "coding-prompt",
+        description: "Build a precise coding prompt with language, task, constraints and I/O details.",
+        summary:
+          "Composes a specific programming prompt so the AI returns code that matches your requirements.",
+        keywords: ["coding prompt", "programming prompt", "code generation", "developer prompt", "ai code"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "Unit Converter",
+    slug: "unit",
+    description:
+      "Convert between units of length, area, volume, weight, temperature, time and currency. Every conversion runs on your device — instant, and nothing is uploaded.",
+    colorClass: "text-unit",
+    subtleClass: "bg-unit-subtle",
+    tools: [
+      {
+        name: "Length Converter",
+        slug: "length",
+        description: "Convert between metres, feet, inches, miles, kilometres and more.",
+        summary: "Converts length and distance across metric and imperial units instantly.",
+        keywords: ["length converter", "cm to inches", "meters to feet", "km to miles", "distance"],
+        isNew: true,
+      },
+      {
+        name: "Area Converter",
+        slug: "area",
+        description: "Convert between square metres, acres, hectares, square feet and more.",
+        summary: "Converts area across metric and imperial units, including acres and hectares.",
+        keywords: ["area converter", "sq ft to sq m", "acre to hectare", "square meter", "land area"],
+        isNew: true,
+      },
+      {
+        name: "Volume Converter",
+        slug: "volume",
+        description: "Convert between litres, gallons, cups, millilitres and more.",
+        summary: "Converts volume across metric, US and cooking units like cups and tablespoons.",
+        keywords: ["volume converter", "litres to gallons", "ml to oz", "cups", "cooking measures"],
+        isNew: true,
+      },
+      {
+        name: "Weight Converter",
+        slug: "weight",
+        description: "Convert between kilograms, pounds, ounces, grams, stones and tonnes.",
+        summary: "Converts weight and mass across metric and imperial units instantly.",
+        keywords: ["weight converter", "kg to lbs", "pounds to kg", "grams to ounces", "mass"],
+        isNew: true,
+      },
+      {
+        name: "Temperature Converter",
+        slug: "temperature",
+        description: "Convert between Celsius, Fahrenheit and Kelvin.",
+        summary: "Converts temperature with the correct formulas, not a simple ratio.",
+        keywords: ["temperature converter", "celsius to fahrenheit", "c to f", "kelvin", "fahrenheit"],
+        isNew: true,
+      },
+      {
+        name: "Time Converter",
+        slug: "time",
+        description: "Convert between seconds, minutes, hours, days, weeks and years.",
+        summary: "Converts durations across time units, from milliseconds to years.",
+        keywords: ["time converter", "hours to minutes", "days to hours", "seconds", "duration"],
+        isNew: true,
+      },
+      {
+        name: "Currency Converter",
+        slug: "currency",
+        description: "Convert between currencies using an editable, offline reference rate.",
+        summary: "Converts currency with a built-in indicative rate you can edit — no network, nothing uploaded.",
+        keywords: ["currency converter", "usd to inr", "exchange rate", "eur to usd", "money"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "Color",
+    slug: "color",
+    description:
+      "Convert colour codes, build palettes and check contrast — the everyday colour jobs for designers and developers. Everything runs on your device.",
+    colorClass: "text-clr",
+    subtleClass: "bg-clr-subtle",
+    tools: [
+      {
+        name: "HEX to RGB Converter",
+        slug: "hex-to-rgb",
+        description: "Convert a HEX colour code to RGB and HSL, with a live swatch.",
+        summary: "Turns a #hex value into rgb() and hsl() forms you can copy, updating live.",
+        keywords: ["hex to rgb", "hex to hsl", "color code", "hex converter", "rgb"],
+        isNew: true,
+      },
+      {
+        name: "RGB to HSL Converter",
+        slug: "rgb-to-hsl",
+        description: "Convert RGB values to HSL and HEX, with a live swatch.",
+        summary: "Turns red, green and blue values into HSL and a #hex code you can copy.",
+        keywords: ["rgb to hsl", "rgb to hex", "hsl converter", "color code", "rgb"],
+        isNew: true,
+      },
+      {
+        name: "Gradient Generator",
+        slug: "gradient",
+        description: "Build a multi-stop CSS gradient with colour stops you place yourself.",
+        summary: "Blends three colour stops into a linear or radial gradient and copies the CSS.",
+        keywords: ["gradient generator", "css gradient", "multi stop gradient", "linear", "radial"],
+        isNew: true,
+      },
+      {
+        name: "CSS Color Generator",
+        slug: "css-color",
+        description: "Pick a colour and copy it as CSS — colour, background, border and variables.",
+        summary: "Generates ready-to-paste CSS snippets and a custom property for a chosen colour.",
+        keywords: ["css color", "css variable", "color code css", "background color", "css generator"],
+        isNew: true,
+      },
+      {
+        name: "Color Picker",
+        slug: "color-picker",
+        description: "Pick a colour from the spectrum and get its HEX, RGB and HSL plus tints and shades.",
+        summary: "A spectrum picker that outputs every colour code and a row of lighter and darker steps.",
+        keywords: ["color picker", "hex picker", "color codes", "tints", "shades", "color spectrum"],
+        isNew: true,
+      },
+      {
+        name: "Palette Generator",
+        slug: "palette",
+        description: "Generate complementary, analogous and triadic palettes from one base colour.",
+        summary: "Builds harmonious colour schemes from a base colour using colour-wheel relationships.",
+        keywords: ["palette generator", "color scheme", "complementary", "analogous", "triadic", "colors"],
+        isNew: true,
+      },
+      {
+        name: "Contrast Checker",
+        slug: "contrast",
+        description: "Check the WCAG contrast ratio between two colours and whether it passes.",
+        summary: "Reports the contrast ratio and AA/AAA pass or fail for normal and large text.",
+        keywords: ["contrast checker", "wcag contrast", "accessibility", "color contrast", "a11y"],
+        isNew: true,
+      },
+      {
+        name: "Tailwind Color Generator",
+        slug: "tailwind",
+        description: "Generate a Tailwind-style 50–950 shade scale from any base colour.",
+        summary: "Builds an 11-step shade scale in Tailwind's format, ready for your config.",
+        keywords: ["tailwind color", "tailwind palette", "shade scale", "50 to 950", "tailwind config"],
+        isNew: true,
+      },
+    ],
+  },
+  {
+    label: "Resume",
+    slug: "resume",
+    description:
+      "Build a resume and cover letter and check them against the basics recruiters and ATS software look for. Everything runs on your device — your career details are never uploaded.",
+    colorClass: "text-resume",
+    subtleClass: "bg-resume-subtle",
+    tools: [
+      {
+        name: "Resume Builder",
+        slug: "resume-builder",
+        description: "Fill in your details and get a clean, structured resume to copy or download.",
+        summary:
+          "Assembles your contact, summary, experience, education and skills into a tidy plain-text resume.",
+        keywords: ["resume builder", "cv builder", "make resume", "resume template", "free resume"],
+        isNew: true,
+      },
+      {
+        name: "Cover Letter Template",
+        slug: "cover-letter",
+        description: "Generate a tailored cover letter draft from a few details about the role.",
+        summary:
+          "Fills a proven cover-letter structure with your name, the company, the role and your key points.",
+        keywords: ["cover letter", "cover letter template", "cover letter generator", "job application"],
+        isNew: true,
+      },
+      {
+        name: "Resume Checker",
+        slug: "resume-checker",
+        description: "Check your resume against common rules — length, action verbs, numbers and clichés.",
+        summary:
+          "Runs rule-based checks for length, quantified impact, action verbs, contact details and clichés.",
+        keywords: ["resume checker", "cv checker", "resume review", "resume score", "resume tips"],
+        isNew: true,
+      },
+      {
+        name: "ATS Keyword Checker",
+        slug: "ats-checker",
+        description: "Compare your resume to a job description and see which keywords are missing.",
+        summary:
+          "Extracts the key terms from a job description and shows which appear in your resume and which don't.",
+        keywords: ["ats checker", "keyword checker", "applicant tracking", "resume keywords", "job description"],
+        isNew: true,
+      },
+    ],
+  },
 ];
 
 // Trailing slashes for the same reason as toolHref — `trailingSlash: true`

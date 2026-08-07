@@ -61,12 +61,14 @@ export default function JwtDecoderTool() {
 
   const payload = decoded?.payload;
   const exp = payload?.exp;
+  // Read "now" once at mount rather than during render — Date.now() is an impure
+  // read and belongs in a state initializer, not a useMemo body.
+  const [now] = useState(() => Date.now());
   const expiryNote = useMemo(() => {
     if (typeof exp !== "number") return null;
     const ms = exp < 1e12 ? exp * 1000 : exp;
-    const expired = ms < Date.now();
-    return { expired, when: new Date(ms).toLocaleString(undefined, { timeZoneName: "short" }) };
-  }, [exp]);
+    return { expired: ms < now, when: new Date(ms).toLocaleString(undefined, { timeZoneName: "short" }) };
+  }, [exp, now]);
 
   return (
     <div className="space-y-5">

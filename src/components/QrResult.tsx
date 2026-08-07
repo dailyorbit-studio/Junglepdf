@@ -16,25 +16,28 @@ export default function QrResult({ value, filename = "qrcode" }: { value: string
   const [size, setSize] = useState(320);
 
   useEffect(() => {
-    if (!value) {
-      setDataUrl("");
-      setError("");
-      return;
-    }
     let cancelled = false;
-    QRCode.toDataURL(value, { width: size, margin: 2, errorCorrectionLevel: "M" })
-      .then((url) => {
+    (async () => {
+      if (!value) {
+        if (!cancelled) {
+          setDataUrl("");
+          setError("");
+        }
+        return;
+      }
+      try {
+        const url = await QRCode.toDataURL(value, { width: size, margin: 2, errorCorrectionLevel: "M" });
         if (!cancelled) {
           setDataUrl(url);
           setError("");
         }
-      })
-      .catch(() => {
+      } catch {
         if (!cancelled) {
           setError("Could not generate a QR code — the input may be too long.");
           setDataUrl("");
         }
-      });
+      }
+    })();
     return () => {
       cancelled = true;
     };
