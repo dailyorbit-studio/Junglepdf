@@ -49,7 +49,7 @@ export default function ResumeBuilderTool() {
         <TextArea label="Skills" value={skills} onChange={setSkills} rows={2} placeholder="React, TypeScript, Node, SQL" />
       </div>
 
-      <div className="lg:sticky lg:top-20 lg:self-start">
+      <div className="min-w-0 lg:sticky lg:top-20 lg:self-start">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-ink">Preview</span>
           <div className="flex gap-2">
@@ -65,7 +65,11 @@ export default function ResumeBuilderTool() {
             )}
           </div>
         </div>
-        <pre className="min-h-[20rem] overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-raised p-4 font-mono text-xs text-ink leading-relaxed">
+        {/* break-words: whitespace-pre-wrap wraps on spaces but leaves a long
+            unbreakable token (a pasted URL, say) to stretch the pre — and with
+            it the grid column — past the viewport. break-words lets that token
+            wrap too. */}
+        <pre className="min-h-[20rem] overflow-x-auto whitespace-pre-wrap break-words rounded-xl border border-border bg-surface-raised p-4 font-mono text-xs text-ink leading-relaxed">
           {resume || "Fill in your details to build the resume."}
         </pre>
       </div>

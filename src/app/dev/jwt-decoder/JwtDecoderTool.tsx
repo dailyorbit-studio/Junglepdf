@@ -135,7 +135,11 @@ export default function JwtDecoderTool() {
 function Section({ title, json }: { title: string; json: Record<string, unknown> }) {
   const text = JSON.stringify(json, null, 2);
   return (
-    <div className="rounded-lg border border-border bg-surface-raised p-4">
+    // min-w-0: this card is a grid item, whose default `min-width: auto` refuses
+    // to shrink below its content. Without it a long unbreakable claim value
+    // stretches the <pre> — and with it the whole grid — past the viewport
+    // instead of letting the pre's own overflow-x-auto scroll it.
+    <div className="min-w-0 rounded-lg border border-border bg-surface-raised p-4">
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-sm font-semibold text-ink">{title}</h2>
         <CopyButton value={text} />

@@ -62,7 +62,7 @@ export default function AtsCheckerTool() {
               <h2 className="text-sm font-medium text-ink mb-2">Missing keywords</h2>
               <div className="flex flex-wrap gap-2">
                 {analysis.missing.map((k) => (
-                  <span key={k} className="rounded-full border border-error-border bg-error-subtle px-3 py-1 text-xs text-error-ink">
+                  <span key={k} className="max-w-full break-all rounded-full border border-error-border bg-error-subtle px-3 py-1 text-xs text-error-ink">
                     {k}
                   </span>
                 ))}
@@ -74,7 +74,7 @@ export default function AtsCheckerTool() {
             <h2 className="text-sm font-medium text-ink mb-2">Matched keywords</h2>
             <div className="flex flex-wrap gap-2">
               {analysis.matched.map((k) => (
-                <span key={k} className="rounded-full border border-success-border bg-success-subtle px-3 py-1 text-xs text-success-ink">
+                <span key={k} className="max-w-full break-all rounded-full border border-success-border bg-success-subtle px-3 py-1 text-xs text-success-ink">
                   {k}
                 </span>
               ))}

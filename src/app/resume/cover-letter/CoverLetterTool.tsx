@@ -41,7 +41,7 @@ export default function CoverLetterTool() {
         />
       </div>
 
-      <div className="lg:sticky lg:top-20 lg:self-start">
+      <div className="min-w-0 lg:sticky lg:top-20 lg:self-start">
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-ink">Preview</span>
           <div className="flex gap-2">
@@ -57,7 +57,9 @@ export default function CoverLetterTool() {
             )}
           </div>
         </div>
-        <pre className="min-h-[20rem] overflow-x-auto whitespace-pre-wrap rounded-xl border border-border bg-surface-raised p-4 text-sm text-ink leading-relaxed">
+        {/* break-words so a long unbreakable token wraps rather than stretching
+            the column past the viewport — see the resume builder for the full note. */}
+        <pre className="min-h-[20rem] overflow-x-auto whitespace-pre-wrap break-words rounded-xl border border-border bg-surface-raised p-4 text-sm text-ink leading-relaxed">
           {letter || "Enter the company and role to draft your cover letter."}
         </pre>
       </div>

@@ -10,7 +10,10 @@ export default function PromptResult({ text, label = "Your prompt" }: { text: st
         <span className="text-sm font-semibold text-ink">{label}</span>
         {text && <CopyButton value={text} />}
       </div>
-      <p className="min-h-[3rem] whitespace-pre-wrap text-sm text-ink leading-relaxed">
+      {/* break-words: whitespace-pre-wrap keeps line breaks and wraps on spaces,
+          but a long unbreakable token (a pasted URL or ID) would still push the
+          box — and the page — past the viewport. break-words wraps it too. */}
+      <p className="min-h-[3rem] whitespace-pre-wrap break-words text-sm text-ink leading-relaxed">
         {text || <span className="text-ink-muted">Fill in the fields to build your prompt.</span>}
       </p>
     </div>
